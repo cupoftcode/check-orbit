@@ -46,6 +46,55 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ── Brand lane ─────────────────────────────────────────── */
+  --color-brand: #DE6438;
+  --color-brand-deep: #C45327;
+  --color-brand-light: #E8A972;
+  --color-brand-soft: #F6DEC2;
+
+  --color-trust: #5B9BC5;
+  --color-trust-light: #BDD9F0;
+  --color-trust-soft: #E7F1FA;
+
+  --color-premium: #DDB943;
+
+  /* ── Warm neutrals ────────────────────────────────────── */
+  --color-cream: #F5EEE4;
+  --color-cream-2: #EFE6D8;
+  --color-paper: #FFFFFF;
+  --color-ink: #1F1A15;
+  --color-ink-2: #3B3228;
+  --color-ink-3: #6E6357;
+  --color-ink-4: #9A8F82;
+  --color-rule: #E6DCCC;
+  --color-rule-2: #D8CCB9;
+
+  /* ── Status lane (compliance-only, muted) ──────────────── */
+  --color-status-legal-bg: #ECF3EC;
+  --color-status-legal-fg: #2F6B3F;
+  --color-status-legal-ink: #1E4A2B;
+  --color-status-rx-bg: #E4EEF6;
+  --color-status-rx-fg: #2D6A92;
+  --color-status-rx-ink: #1D4867;
+  --color-status-rest-bg: #F7ECD4;
+  --color-status-rest-fg: #8A5E14;
+  --color-status-rest-ink: #5E3F08;
+  --color-status-banned-bg: #F5DFD8;
+  --color-status-banned-fg: #9C3D2A;
+  --color-status-banned-ink: #6E2616;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --shadow-card: 0 1px 2px rgba(31,26,21,.04), 0 8px 24px -12px rgba(31,26,21,.12);
+  --shadow-lift: 0 2px 4px rgba(31,26,21,.05), 0 20px 40px -16px rgba(31,26,21,.18);
+
+  /* ── Typography ────────────────────────────────────────── */
+  --font-display: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
+  --font-sans: var(--font-open-sans), "Open Sans", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Border radius ─────────────────────────────────────── */
+  --radius-pill: 9999px;
 }
 
 :root {
@@ -127,4 +176,104 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ── CheckOrbit v2 scope — remap shadcn vars to warm palette ── */
+.co-scope {
+  --background: #F5EEE4;
+  --foreground: #1F1A15;
+  --card: #FFFFFF;
+  --card-foreground: #1F1A15;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F1A15;
+  --primary: #DE6438;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EFE6D8;
+  --secondary-foreground: #1F1A15;
+  --muted: #EFE6D8;
+  --muted-foreground: #6E6357;
+  --accent: #EFE6D8;
+  --accent-foreground: #1F1A15;
+  --border: #E6DCCC;
+  --input: #E6DCCC;
+  --ring: #DE6438;
+}
+
+/* ── CheckOrbit v2 base typography ── */
+[data-v2] {
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[data-v2] h1,
+[data-v2] h2,
+[data-v2] h3,
+[data-v2] h4,
+[data-v2] h5,
+[data-v2] h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+@keyframes co-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+[data-v2] .floater-card {
+  animation: co-float 6s ease-in-out infinite;
+}
+[data-v2] .floater-card:nth-child(2) { animation-delay: -1.5s; }
+[data-v2] .floater-card:nth-child(3) { animation-delay: -3s; }
+[data-v2] .floater-card:nth-child(4) { animation-delay: -4.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-v2] .floater-card { animation: none; }
+}
+
+/* ── CheckOrbit v3 scope — pixel-matched to handoff ── */
+[data-v3] {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[data-v3] h1,
+[data-v3] h2,
+[data-v3] h3,
+[data-v3] h4,
+[data-v3] h5,
+[data-v3] h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+[data-v3] button {
+  font-family: var(--font-display);
+}
+
+[data-v3] input,
+[data-v3] textarea,
+[data-v3] select {
+  font-family: var(--font-sans);
+}
+
+@keyframes v3-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+[data-v3] .v3-floater { animation: v3-float 6s ease-in-out infinite; }
+[data-v3] .v3-floater-b { animation-delay: -1.5s; }
+[data-v3] .v3-floater-c { animation-delay: -3s; }
+[data-v3] .v3-floater-d { animation-delay: -4.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-v3] .v3-floater { animation: none; }
 }
