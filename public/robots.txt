@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /check/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+
+Sitemap: https://checkorbit.com/sitemap.xml
