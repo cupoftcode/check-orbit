@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Enums ---
+
+enum ComplianceStatus {
+  LEGAL
+  PRESCRIPTION_ONLY
+  RESTRICTED
+  BANNED
+}
+
+enum DisclosureLevel {
+  FULL
+  PARTIAL
+  UNDISCLOSED
+}
+
+enum AiConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ESCALATED
+}
+
+enum AuditAction {
+  APPROVED
+  REJECTED
+  ESCALATED
+}
+
+// --- Core Models ---
+
+model Country {
+  id                  String               @id @default(cuid())
+  name                String
+  code                String               @unique // ISO 3166-1 alpha-2
+  isCovered           Boolean              @default(false)
+  flagEmoji           String               @default("")
+  popularityRank      Int                  @default(0)
+  regulations         Regulation[]
+  stagingRegulations  StagingRegulation[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@map("countries")
+}
+
+model Medication {
+  id               String           @id @default(cuid())
+  brandName        String
+  genericName      String?
+  slug             String           @unique
+  proprietaryBlend Boolean          @default(false)
+  disclosureLevel  DisclosureLevel  @default(FULL)
+  compounds        MedicationCompound[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@map("medications")
+}
+
+model Compound {
+  id                  String               @id @default(cuid())
+  name                String
+  atcCode             String?
+  casNumber           String?
+  medications         MedicationCompound[]
+  regulations         Regulation[]
+  stagingRegulations  StagingRegulation[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@map("compounds")
+}
+
+model MedicationCompound {
+  medicationId String
+  compoundId   String
+  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  compound     Compound   @relation(fields: [compoundId], references: [id], onDelete: Cascade)
+
+  @@id([medicationId, compoundId])
+  @@map("medication_compounds")
+}
+
+model Regulation {
+  id                   String           @id @default(cuid())
+  compoundId           String
+  countryId            String
+  status               ComplianceStatus
+  regulatoryAuthority  String
+  requiredDocuments    String?
+  quantityLimits       String?
+  permitAuthority      String?
+  permitApplicationUrl String?
+  permitLeadTimeDays   Int?
+  dosageThreshold      String?
+  biosecurityFlag      Boolean          @default(false)
+  biosecurityDetails   String?
+  sourceDocumentTitle  String
+  sourceDocumentUrl    String
+  lastVerifiedAt       DateTime
+  verifiedBy           String
+  notes                String?
+  compound             Compound         @relation(fields: [compoundId], references: [id], onDelete: Cascade)
+  country              Country          @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  @@unique([compoundId, countryId, regulatoryAuthority])
+  @@map("regulations")
+}
+
+model MedicationNotifySignup {
+  id             String   @id @default(cuid())
+  email          String
+  medicationSlug String
+  createdAt      DateTime @default(now())
+
+  @@unique([email, medicationSlug])
+  @@map("medication_notify_signups")
+}
+
+model SavedSearch {
+  id              String   @id @default(cuid())
+  userId          String
+  medicationSlug  String
+  countryCode     String
+  resultSnapshot  Json
+  departureDate   DateTime?
+  savedAt         DateTime @default(now())
+  lastCheckedAt   DateTime @default(now())
+  notifications   NotificationSubscription[]
+
+  @@unique([userId, medicationSlug, countryCode])
+  @@map("saved_searches")
+}
+
+model NotificationSubscription {
+  id               String      @id @default(cuid())
+  userId           String
+  savedSearchId    String
+  regulationAlerts Boolean     @default(true)
+  permitReminders  Boolean     @default(true)
+  isActive         Boolean     @default(true)
+  unsubscribeToken String      @unique @default(cuid())
+  savedSearch      SavedSearch @relation(fields: [savedSearchId], references: [id], onDelete: Cascade)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@unique([userId, savedSearchId])
+  @@map("notification_subscriptions")
+}
+
+model StagingRegulation {
+  id                   String           @id @default(cuid())
+  compoundId           String
+  countryId            String
+  proposedStatus       ComplianceStatus
+  regulatoryAuthority  String?
+  requiredDocuments    String?
+  quantityLimits       String?
+  permitAuthority      String?
+  permitApplicationUrl String?
+  permitLeadTimeDays   Int?
+  dosageThreshold      String?
+  biosecurityFlag      Boolean          @default(false)
+  biosecurityDetails   String?
+  sourceDocumentTitle  String
+  sourceDocumentUrl    String
+  aiConfidence         AiConfidence
+  aiExtractedText      String
+  aiTranslation        String?
+  flaggedAt            DateTime         @default(now())
+  reviewStatus         ReviewStatus     @default(PENDING)
+  reviewedBy           String?
+  reviewedAt           DateTime?
+  reviewNotes          String?
+  escalationNotes      String?
+  compound             Compound         @relation(fields: [compoundId], references: [id])
+  country              Country          @relation(fields: [countryId], references: [id])
+
+  @@index([compoundId, countryId])
+  @@index([reviewStatus])
+  @@index([aiConfidence])
+  @@map("staging_regulations")
+}
+
+model AuditTrail {
+  id             String      @id @default(cuid())
+  regulationId   String?
+  stagingId      String?
+  action         AuditAction
+  previousData   Json?
+  newData        Json?
+  sourceCitation String?
+  performedBy    String
+  performedAt    DateTime    @default(now())
+  notes          String?
+
+  @@index([performedAt])
+  @@index([regulationId])
+  @@map("audit_trail")
+}
+
+model DestinationSubscription {
+  id               String   @id @default(cuid())
+  email            String
+  countryCodes     String[]
+  subscribedAt     DateTime @default(now())
+  unsubscribeToken String   @unique @default(cuid())
+
+  @@unique([email])
+  @@map("destination_subscriptions")
+}
