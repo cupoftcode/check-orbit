@@ -1,0 +1,1937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CheckOrbit — Travel medication compliance</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* brand */
+    --orange: #DE6438;
+    --orange-deep: #C45327;
+    --apricot: #E8A972;
+    --apricot-soft: #F6DEC2;
+    --blue: #5B9BC5;
+    --ice: #BDD9F0;
+    --ice-soft: #E7F1FA;
+    --gold: #DDB943;
+
+    /* neutrals — warm cream */
+    --cream: #F5EEE4;
+    --cream-2: #EFE6D8;
+    --paper: #FFFFFF;
+    --ink: #1F1A15;
+    --ink-2: #3B3228;
+    --ink-3: #6E6357;
+    --ink-4: #9A8F82;
+    --rule: #E6DCCC;
+    --rule-2: #D8CCB9;
+
+    /* status — muted, never decorative */
+    --sage-bg: #ECF3EC;
+    --sage-fg: #2F6B3F;
+    --sage-ink: #1E4A2B;
+    --sky-bg: #E4EEF6;
+    --sky-fg: #2D6A92;
+    --sky-ink: #1D4867;
+    --amber-bg: #F7ECD4;
+    --amber-fg: #8A5E14;
+    --amber-ink: #5E3F08;
+    --rose-bg: #F5DFD8;
+    --rose-fg: #9C3D2A;
+    --rose-ink: #6E2616;
+
+    --shadow-card: 0 1px 2px rgba(31,26,21,.04), 0 8px 24px -12px rgba(31,26,21,.12);
+    --shadow-lift: 0 2px 4px rgba(31,26,21,.05), 0 20px 40px -16px rgba(31,26,21,.18);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Open Sans', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,h2,h3,h4,h5,h6,.mono-h { font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em; color: var(--ink); }
+  .mono { font-family: 'JetBrains Mono', monospace; letter-spacing: 0; }
+  button { font-family: 'Montserrat', sans-serif; }
+  input, textarea, select { font-family: 'Open Sans', sans-serif; }
+
+  /* chrome: top switcher */
+  .screenbar {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(31,26,21,.92);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px;
+    display: flex; gap: 2px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600; font-size: 12px;
+    box-shadow: var(--shadow-lift);
+  }
+  .screenbar button {
+    background: transparent; border: 0; color: #EFE6D8;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  .screenbar button:hover { color: #fff; }
+  .screenbar button.active { background: var(--orange); color: #fff; }
+
+  /* Nav shared */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 56px;
+    background: transparent;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  .brand-dot {
+    width: 32px; height: 32px;
+    display: inline-grid; place-items: center;
+    flex: 0 0 32px;
+  }
+  .brand-dot svg { width: 100%; height: 100%; display: block; }
+  .nav-links {
+    display: flex; gap: 30px;
+    font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px;
+  }
+  .nav-links a { color: var(--ink-2); text-decoration: none; }
+  .nav-links a:hover { color: var(--orange); }
+  .nav-right { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    border: 0; cursor: pointer;
+    padding: 11px 18px; border-radius: 999px;
+    font-size: 13px; letter-spacing: 0;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-primary:hover { background: var(--orange-deep); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: #fff; }
+  .btn-gold { background: var(--gold); color: var(--ink); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px; border-radius: 999px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  .arrow { width: 12px; height: 12px; }
+
+  /* Layout containers */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 56px; }
+
+  /* HOME */
+  .hero {
+    position: relative;
+    padding: 40px 0 80px;
+    overflow: hidden;
+  }
+  .hero-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 56px;
+    text-align: center;
+    position: relative;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px 6px 6px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--rule);
+    font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 12px;
+    color: var(--ink-2);
+    margin-bottom: 26px;
+  }
+  .eyebrow .chip {
+    background: var(--orange); color: #fff;
+    padding: 3px 10px; border-radius: 999px; font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  h1.hero-title {
+    font-size: clamp(48px, 6.5vw, 92px);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--ink);
+  }
+  h1.hero-title em {
+    font-style: normal;
+    position: relative;
+    display: inline-block;
+  }
+  h1.hero-title em::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0.06em;
+    height: 0.18em;
+    background: var(--apricot-soft);
+    z-index: -1;
+    border-radius: 2px;
+  }
+  .hero-sub {
+    font-size: 18px; color: var(--ink-3);
+    max-width: 620px; margin: 0 auto 40px;
+    line-height: 1.55;
+  }
+
+  /* Search card */
+  .search-card {
+    background: #fff; border-radius: 20px;
+    padding: 10px; display: flex; gap: 8px;
+    box-shadow: var(--shadow-lift);
+    max-width: 720px; margin: 0 auto;
+    border: 1px solid var(--rule);
+    align-items: stretch;
+    text-align: left;
+  }
+  .search-field {
+    flex: 1; display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 14px;
+    cursor: text;
+    position: relative;
+  }
+  .search-field + .search-field { border-left: 1px solid var(--rule); }
+  .search-field:hover { background: var(--cream); }
+  .search-field:focus-within { background: var(--cream); }
+  .search-field.dirty { background: var(--cream); }
+  .sf-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center; flex: 0 0 36px;
+    background: var(--apricot-soft); color: var(--orange-deep);
+  }
+  .sf-icon.blue { background: var(--ice-soft); color: var(--blue); }
+  .sf-body { flex: 1; min-width: 0; }
+  .sf-label {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .sf-input {
+    width: 100%; border: 0; outline: 0;
+    background: transparent;
+    font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: 600;
+    color: var(--ink); padding: 2px 0 0;
+    letter-spacing: -0.005em;
+  }
+  .sf-input::placeholder { color: var(--ink-4); font-weight: 500; }
+  .search-go {
+    background: var(--orange); color: #fff; border: 0; cursor: pointer;
+    border-radius: 14px; padding: 0 22px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 14px; letter-spacing: -0.005em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-go:hover { background: var(--orange-deep); }
+  .search-go svg { width: 16px; height: 16px; }
+
+  .suggest {
+    background: #fff; border: 1px solid var(--rule); border-radius: 14px;
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+    z-index: 40;
+    box-shadow: var(--shadow-lift);
+    padding: 6px;
+    display: none;
+  }
+  .suggest.open { display: block; }
+  .suggest-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  }
+  .suggest-item:hover, .suggest-item.active { background: var(--cream); }
+  .suggest-item .si-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; }
+  .suggest-item .si-meta { font-size: 12px; color: var(--ink-3); }
+
+  .hero-meta {
+    margin-top: 18px;
+    display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .hero-meta span { display: inline-flex; align-items: center; gap: 7px; }
+  .hero-meta svg { width: 14px; height: 14px; color: var(--blue); }
+
+  /* Floating result cards on homepage */
+  .floaters { position: relative; margin-top: 70px; height: 360px; }
+  .floater {
+    position: absolute;
+    background: #fff; border-radius: 16px;
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .f1 { top: 0; left: 8%; width: 260px; transform: rotate(-3deg); }
+  .f2 { top: 40px; right: 10%; width: 280px; transform: rotate(2.5deg); }
+  .f3 { top: 200px; left: 22%; width: 230px; transform: rotate(2deg); }
+  .f4 { top: 180px; right: 22%; width: 250px; transform: rotate(-2deg); }
+  .f-center {
+    position: absolute; left: 50%; top: 30px; transform: translateX(-50%);
+    width: 300px; background: var(--ink); color: #fff;
+    border-radius: 18px; padding: 18px;
+    box-shadow: var(--shadow-lift);
+  }
+
+  .status-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 8px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .sb-sage { background: var(--sage-bg); color: var(--sage-ink); }
+  .sb-sky { background: var(--sky-bg); color: var(--sky-ink); }
+  .sb-amber { background: var(--amber-bg); color: var(--amber-ink); }
+  .sb-rose { background: var(--rose-bg); color: var(--rose-ink); }
+  .sb-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  .f-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; line-height: 1.2; }
+  .f-meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  .f-route {
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    display: flex; align-items: center; gap: 10px; font-size: 18px;
+    margin: 6px 0;
+  }
+  .f-route svg { width: 16px; }
+
+  /* Trusted row */
+  .trusted {
+    margin-top: 80px; padding: 26px 56px;
+    background: var(--cream-2);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 40px; flex-wrap: wrap;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .trusted-label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; color: var(--ink-2); }
+  .src-logos { display: flex; gap: 40px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--ink-3); font-size: 14px; letter-spacing: 0.02em; flex-wrap: wrap; }
+  .src-logos span { opacity: 0.8; }
+
+  /* Section shared */
+  section.block { padding: 96px 0; }
+  .section-head { text-align: center; margin-bottom: 56px; }
+  .section-head h2 {
+    font-size: clamp(34px, 4vw, 56px); font-weight: 900; letter-spacing: -0.03em;
+    margin: 0 0 14px; line-height: 1.02;
+  }
+  .section-head p { color: var(--ink-3); font-size: 17px; max-width: 580px; margin: 0 auto; }
+  .section-tabs {
+    display: inline-flex; padding: 5px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--rule);
+    margin-bottom: 20px;
+  }
+  .section-tabs button {
+    border: 0; background: transparent; padding: 8px 18px; border-radius: 999px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px;
+    color: var(--ink-3); cursor: pointer;
+  }
+  .section-tabs button.active { background: var(--orange); color: #fff; }
+
+  /* 3-card grid */
+  .triad {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .tcard {
+    background: var(--paper);
+    border-radius: 20px; padding: 26px;
+    border: 1px solid var(--rule);
+    min-height: 340px;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .tcard.tinted-1 { background: var(--ice-soft); border-color: var(--ice); }
+  .tcard.tinted-2 { background: #FBEADD; border-color: var(--apricot-soft); }
+  .tcard.tinted-3 { background: #F9EFC9; border-color: #ECDA93; }
+  .tcard h3 { font-size: 22px; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .tcard p { color: var(--ink-2); font-size: 14.5px; margin: 0; }
+  .tcard .tc-visual { margin: -6px -6px 18px; min-height: 150px; display: grid; place-items: center; }
+
+  /* FOOTER */
+  footer.foot {
+    background: var(--ink); color: #EFE6D8;
+    padding: 80px 56px 40px;
+    margin-top: 60px;
+  }
+  .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1280px; margin: 0 auto; }
+  .foot h4 { color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 14px; }
+  .foot a { color: #C9BFB0; text-decoration: none; display: block; padding: 5px 0; font-size: 14px; }
+  .foot a:hover { color: var(--apricot); }
+  .foot .brand { color: #fff; margin-bottom: 12px; }
+  .foot .brand-dot { }
+  .foot-note { color: #8A7E6D; font-size: 13px; margin-top: 14px; max-width: 320px; line-height: 1.55; }
+  .foot-bottom {
+    max-width: 1280px; margin: 50px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid #3A3024;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+    font-size: 12px; color: #8A7E6D;
+  }
+
+  /* RESULT page */
+  .result-wrap { padding: 40px 56px 80px; max-width: 1280px; margin: 0 auto; }
+  .breadcrumbs {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 12px;
+    color: var(--ink-3); margin-bottom: 18px;
+    letter-spacing: 0.02em;
+  }
+  .breadcrumbs .sep { opacity: .5; }
+  .breadcrumbs a { color: var(--ink-3); text-decoration: none; }
+  .breadcrumbs .cur { color: var(--ink); }
+
+  .result-top {
+    background: #fff; border-radius: 24px;
+    border: 1px solid var(--rule);
+    padding: 36px;
+    box-shadow: var(--shadow-card);
+  }
+  .result-head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;
+    margin-bottom: 30px;
+  }
+  .result-route {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 13px; color: var(--ink-3); letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .result-title {
+    font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;
+    margin: 0 0 14px;
+  }
+  .result-title .sep { color: var(--ink-4); margin: 0 10px; font-weight: 600; }
+  .result-quickmeta { display: flex; gap: 20px; color: var(--ink-3); font-size: 13px; flex-wrap: wrap; }
+  .result-quickmeta span { display: inline-flex; gap: 6px; align-items: center; }
+
+  .verdict {
+    padding: 18px 22px; border-radius: 16px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px;
+  }
+  .verdict.v-sky { background: var(--sky-bg); }
+  .verdict.v-sage { background: var(--sage-bg); }
+  .verdict.v-amber { background: var(--amber-bg); }
+  .verdict.v-rose { background: var(--rose-bg); }
+  .verdict-ico {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,.6); display: grid; place-items: center;
+    flex: 0 0 44px;
+  }
+  .verdict-ico svg { width: 22px; height: 22px; }
+  .v-sky .verdict-ico svg, .v-sky .v-label { color: var(--sky-ink); }
+  .v-sage .verdict-ico svg, .v-sage .v-label { color: var(--sage-ink); }
+  .v-amber .verdict-ico svg, .v-amber .v-label { color: var(--amber-ink); }
+  .v-rose .verdict-ico svg, .v-rose .v-label { color: var(--rose-ink); }
+  .v-label { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
+  .v-sub { font-size: 14px; color: var(--ink-2); }
+
+  .result-grid {
+    display: grid; grid-template-columns: 1.6fr 1fr; gap: 30px;
+    margin-top: 26px;
+  }
+  .rg-main > .panel + .panel { margin-top: 22px; }
+  .panel {
+    background: #fff; border-radius: 20px; border: 1px solid var(--rule);
+    padding: 26px;
+  }
+  .panel h3 {
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 700;
+    margin: 0 0 18px; font-family: 'Montserrat', sans-serif;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel h3 .count {
+    background: var(--ink); color: #fff;
+    font-size: 10px; padding: 2px 7px; border-radius: 999px; letter-spacing: 0;
+  }
+  .compound-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;
+    padding: 16px 0; border-top: 1px solid var(--rule);
+  }
+  .compound-row:first-of-type { border-top: 0; padding-top: 0; }
+  .cr-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.01em; }
+  .cr-meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  .cr-schedule {
+    display: inline-flex; gap: 5px; margin-top: 6px;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--ink-3);
+  }
+  .cr-schedule b { color: var(--ink); font-weight: 600; }
+
+  .doclist { list-style: none; margin: 0; padding: 0; }
+  .doclist li {
+    display: flex; gap: 14px; padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    align-items: flex-start;
+  }
+  .doclist li:first-child { border-top: 0; padding-top: 0; }
+  .doc-check {
+    width: 24px; height: 24px; border-radius: 8px;
+    background: var(--sage-bg); color: var(--sage-ink);
+    display: grid; place-items: center; flex: 0 0 24px;
+  }
+  .doc-check.warn { background: var(--amber-bg); color: var(--amber-ink); }
+  .doc-check svg { width: 14px; height: 14px; }
+  .doc-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14.5px; }
+  .doc-meta { font-size: 13px; color: var(--ink-3); }
+  .doc-meta b { color: var(--ink-2); }
+
+  .quantity-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px;
+  }
+  .qstat {
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--cream); border: 1px solid var(--rule);
+  }
+  .qstat .label { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+  .qstat .value { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
+  .qstat .value small { font-size: 14px; color: var(--ink-3); font-weight: 600; letter-spacing: 0; }
+  .qstat .hint { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+
+  /* Source sidebar */
+  .rg-side > .panel + .panel { margin-top: 22px; }
+  .source-card {
+    background: var(--ink); color: #EFE6D8;
+    border-radius: 20px; padding: 24px;
+    border: 0;
+  }
+  .source-card h3 { color: #8A7E6D; }
+  .source-card h3 .count { background: var(--gold); color: var(--ink); }
+  .source-item {
+    padding: 14px 0; border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .source-item:first-of-type { border-top: 0; padding-top: 0; }
+  .source-agency {
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px;
+    color: #fff; letter-spacing: -0.005em;
+  }
+  .source-url {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--apricot);
+    word-break: break-all; margin-top: 2px;
+  }
+  .source-verify {
+    display: inline-flex; gap: 8px; margin-top: 10px;
+    font-size: 11px; color: #B4A897;
+    align-items: center;
+  }
+  .source-verify .dot { width: 7px; height: 7px; border-radius: 50%; background: #6BAE5A; box-shadow: 0 0 0 4px rgba(107,174,90,.18); }
+
+  .nextsteps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+  .nextsteps li {
+    padding: 14px 0 14px 38px;
+    border-top: 1px solid var(--rule);
+    position: relative;
+    counter-increment: step;
+  }
+  .nextsteps li:first-child { border-top: 0; padding-top: 0; }
+  .nextsteps li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute; left: 0; top: 14px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 12px;
+    color: var(--orange);
+  }
+  .nextsteps li:first-child::before { top: 0; }
+  .ns-t { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14.5px; }
+  .ns-d { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+
+  .cta-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+  /* multi-med stack */
+  .stack-wrap { padding: 40px 56px 80px; max-width: 1280px; margin: 0 auto; }
+  .stack-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 26px; gap: 30px; flex-wrap: wrap; }
+  .stack-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0; }
+  .stack-head p { color: var(--ink-3); margin: 8px 0 0; }
+  .summary-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .summary-pill {
+    display: flex; flex-direction: column;
+    padding: 10px 16px; border-radius: 12px;
+    background: #fff; border: 1px solid var(--rule);
+    min-width: 110px;
+  }
+  .summary-pill .sp-count { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -0.02em; line-height: 1; }
+  .summary-pill .sp-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Montserrat', sans-serif; font-weight: 700; margin-top: 4px; }
+  .summary-pill.sage .sp-count { color: var(--sage-ink); }
+  .summary-pill.sky .sp-count { color: var(--sky-ink); }
+  .summary-pill.amber .sp-count { color: var(--amber-ink); }
+  .summary-pill.rose .sp-count { color: var(--rose-ink); }
+
+  .med-stack { display: flex; flex-direction: column; gap: 14px; }
+  .med-card {
+    background: #fff; border: 1px solid var(--rule);
+    border-radius: 18px; padding: 22px 26px;
+    display: grid; grid-template-columns: 1fr auto auto; gap: 20px;
+    align-items: center;
+    transition: box-shadow .2s ease, transform .2s ease;
+    cursor: pointer;
+  }
+  .med-card:hover { box-shadow: var(--shadow-card); transform: translateY(-1px); }
+  .med-card.banned { border-left: 4px solid var(--rose-fg); }
+  .med-card.restricted { border-left: 4px solid var(--amber-fg); }
+  .med-card.prescription { border-left: 4px solid var(--sky-fg); }
+  .med-card.legal { border-left: 4px solid var(--sage-fg); }
+  .med-main .mc-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
+  .med-main .mc-meta { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  .med-body { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; margin-top: 6px; max-width: 520px; }
+  .med-qty {
+    text-align: right;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 18px; letter-spacing: -0.01em;
+    min-width: 120px;
+  }
+  .med-qty small { display: block; font-size: 11px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; margin-top: 2px; }
+
+  /* Itinerary */
+  .itin-wrap { padding: 40px 56px 80px; max-width: 1280px; margin: 0 auto; }
+  .itin-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 10px; }
+  .itin-sub { color: var(--ink-3); max-width: 580px; }
+
+  .trip-banner {
+    margin: 26px 0 36px;
+    padding: 20px 26px; border-radius: 18px;
+    background: var(--ice-soft);
+    border: 1px solid var(--ice);
+    display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .trip-route-big {
+    font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .trip-route-big .tr-plane { color: var(--blue); }
+  .trip-dates { font-size: 14px; color: var(--sky-ink); font-family: 'Montserrat', sans-serif; font-weight: 600; }
+
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+  .timeline::before {
+    content: ''; position: absolute; left: 14px; top: 12px; bottom: 12px;
+    width: 2px; background: var(--rule-2);
+  }
+  .stop {
+    position: relative;
+    padding: 22px 26px;
+    background: #fff; border-radius: 18px;
+    border: 1px solid var(--rule);
+    margin-bottom: 16px;
+  }
+  .stop::before {
+    content: ''; position: absolute; left: -34px; top: 28px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; border: 3px solid var(--ink);
+  }
+  .stop.warn::before { background: var(--amber-fg); border-color: var(--amber-bg); box-shadow: 0 0 0 3px var(--amber-bg); }
+  .stop.danger::before { background: var(--rose-fg); border-color: var(--rose-bg); box-shadow: 0 0 0 3px var(--rose-bg); }
+  .stop.ok::before { background: var(--sage-fg); border-color: var(--sage-bg); box-shadow: 0 0 0 3px var(--sage-bg); }
+  .stop-head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+    margin-bottom: 10px;
+  }
+  .stop-type { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .stop-city { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -0.02em; }
+  .stop-time { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-3); }
+  .stop-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .stop-body .mini {
+    background: var(--cream); border-radius: 12px; padding: 12px 14px;
+  }
+  .stop-body .mini.sage { background: var(--sage-bg); }
+  .stop-body .mini.sky { background: var(--sky-bg); }
+  .stop-body .mini.amber { background: var(--amber-bg); }
+  .stop-body .mini.rose { background: var(--rose-bg); }
+  .mini .mname { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: -0.005em; }
+  .mini .mstat { font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 3px; }
+  .mini.sage .mstat { color: var(--sage-ink); }
+  .mini.sky .mstat { color: var(--sky-ink); }
+  .mini.amber .mstat { color: var(--amber-ink); }
+  .mini.rose .mstat { color: var(--rose-ink); }
+
+  .conflict {
+    margin: -4px 0 16px 0;
+    padding: 18px 22px; border-radius: 16px;
+    background: var(--amber-bg);
+    border: 1px solid #E5CD84;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .conflict-ico { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 10px; background: #F4DEAA; color: var(--amber-ink); display: grid; place-items: center; }
+  .conflict h4 { margin: 0 0 4px; font-size: 16px; font-weight: 800; color: var(--amber-ink); letter-spacing: -0.01em; }
+  .conflict p { margin: 0; font-size: 13.5px; color: var(--amber-ink); }
+
+  /* Share card */
+  .share-wrap { padding: 40px 56px 80px; max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 420px 1fr; gap: 40px; align-items: start; }
+  .share-panel {
+    background: #fff; border-radius: 20px; padding: 26px; border: 1px solid var(--rule);
+    position: sticky; top: 80px;
+  }
+  .share-panel h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .share-panel p { color: var(--ink-3); font-size: 14px; margin: 0 0 18px; }
+  .share-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .share-opt {
+    padding: 12px; border-radius: 12px;
+    background: var(--cream); border: 1px solid transparent;
+    cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px;
+    text-align: left;
+  }
+  .share-opt.active { background: var(--ink); color: #fff; }
+  .share-opt .so-sub { font-size: 11px; color: var(--ink-3); font-weight: 500; margin-top: 2px; }
+  .share-opt.active .so-sub { color: #C9BFB0; }
+  .share-meta {
+    margin-top: 20px; display: flex; flex-direction: column; gap: 8px;
+    font-size: 12px; color: var(--ink-3);
+  }
+
+  .share-canvas-wrap {
+    display: grid; place-items: center;
+    padding: 40px; border-radius: 24px;
+    background: repeating-linear-gradient(45deg, #EFE6D8, #EFE6D8 10px, #F5EEE4 10px, #F5EEE4 20px);
+    min-height: 600px;
+  }
+  .share-card {
+    width: 400px; background: #fff; border-radius: 28px;
+    padding: 32px; box-shadow: var(--shadow-lift);
+    border: 1px solid var(--rule);
+    position: relative; overflow: hidden;
+  }
+  .share-card::before {
+    content: ''; position: absolute; right: -30px; top: -30px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: var(--apricot-soft);
+    opacity: 0.5;
+    z-index: 0;
+  }
+  .share-card > * { position: relative; z-index: 1; }
+  .sc-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+  .sc-brand .brand-dot { width: 24px; height: 24px; flex: 0 0 24px; }
+  .sc-brand .b-name { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 16px; letter-spacing: -0.01em; }
+  .sc-route { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .sc-med { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 32px; letter-spacing: -0.03em; line-height: 1; margin-bottom: 18px; }
+  .sc-verdict {
+    padding: 18px 20px; border-radius: 16px;
+    margin-bottom: 22px;
+  }
+  .sc-verdict.banned { background: var(--rose-bg); }
+  .sc-verdict.restricted { background: var(--amber-bg); }
+  .sc-verdict.prescription { background: var(--sky-bg); }
+  .sc-verdict.legal { background: var(--sage-bg); }
+  .sc-verdict .sc-label { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -0.02em; }
+  .sc-verdict.banned .sc-label { color: var(--rose-ink); }
+  .sc-verdict.restricted .sc-label { color: var(--amber-ink); }
+  .sc-verdict.prescription .sc-label { color: var(--sky-ink); }
+  .sc-verdict.legal .sc-label { color: var(--sage-ink); }
+  .sc-verdict .sc-sub { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+  .sc-facts {
+    background: var(--cream); border-radius: 14px; padding: 14px 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 22px;
+  }
+  .sc-fact .sf-num { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: -0.01em; }
+  .sc-fact .sf-lbl { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); font-family: 'Montserrat', sans-serif; font-weight: 700; }
+  .sc-src {
+    font-size: 11px; color: var(--ink-3); line-height: 1.5;
+    padding-top: 14px; border-top: 1px solid var(--rule);
+  }
+  .sc-src b { color: var(--ink-2); font-family: 'Montserrat', sans-serif; font-weight: 700; }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed; right: 20px; bottom: 20px;
+    width: 280px;
+    background: #fff; border-radius: 18px;
+    box-shadow: var(--shadow-lift);
+    border: 1px solid var(--rule);
+    z-index: 2000;
+    font-family: 'Open Sans', sans-serif;
+    display: none;
+  }
+  .tweaks.open { display: block; }
+  .tweaks-h { padding: 14px 16px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; }
+  .tweaks-h h4 { margin: 0; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 800; }
+  .tweaks-h button { background: transparent; border: 0; cursor: pointer; color: var(--ink-3); font-size: 16px; }
+  .tweaks-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .tweak-row { display: flex; flex-direction: column; gap: 6px; }
+  .tweak-row label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-family: 'Montserrat', sans-serif; font-weight: 700; }
+  .tweak-swatches { display: flex; gap: 8px; }
+  .tweak-swatch {
+    width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .tweak-swatch.on { border-color: var(--ink); }
+  .tweak-seg { display: flex; background: var(--cream); border-radius: 10px; padding: 3px; gap: 3px; }
+  .tweak-seg button {
+    flex: 1; border: 0; background: transparent; padding: 6px 8px; border-radius: 8px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px; color: var(--ink-3);
+  }
+  .tweak-seg button.on { background: var(--ink); color: #fff; }
+
+  /* loading animation for search */
+  .loader {
+    position: fixed; inset: 0; background: rgba(31,26,21,.9); backdrop-filter: blur(8px);
+    z-index: 3000; display: none; place-items: center;
+    color: #fff;
+  }
+  .loader.open { display: grid; }
+  .loader-inner { text-align: center; }
+  .loader-spin {
+    width: 80px; height: 80px; border-radius: 50%;
+    margin: 0 auto 24px;
+    border: 3px solid rgba(255,255,255,.15);
+    border-top-color: var(--orange);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-t { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.015em; margin-bottom: 6px; }
+  .loader-sub { color: #B4A897; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  @media (max-width: 900px) {
+    .triad { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .share-wrap { grid-template-columns: 1fr; }
+    .wrap, .hero-inner, .result-wrap, .stack-wrap, .itin-wrap, .share-wrap, .nav, .trusted, footer.foot { padding-left: 24px; padding-right: 24px; }
+    .floaters { display: none; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Screen switcher -->
+<nav class="screenbar" id="screenbar">
+  <button data-screen="home" class="active">Home</button>
+  <button data-screen="result">Result</button>
+  <button data-screen="stack">Multi-med</button>
+  <button data-screen="itin">Itinerary</button>
+  <button data-screen="share">Share card</button>
+</nav>
+
+<!-- ============ HOME ============ -->
+<main id="home" class="screen active" data-screen-label="01 Home">
+
+  <nav class="nav">
+    <a class="brand" href="#" onclick="return go('home')">
+      <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+      Check<span style="opacity:.6;font-weight:700">Orbit</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">Product</a>
+      <a href="#">Countries</a>
+      <a href="#">For pharmacists</a>
+      <a href="#">Pricing</a>
+      <a href="#">Sources</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm">Sign in</button>
+      <button class="btn btn-primary btn-sm">Start a check
+        <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow"><span class="chip">NEW</span> Layover-trap detection now covers 214 countries</span>
+
+      <h1 class="hero-title">Your meds. <em>Their rules.</em><br/>Answered in 20 seconds.</h1>
+      <p class="hero-sub">Search any medication against any destination and get a verified, source-cited compliance answer — before customs makes it their problem.</p>
+
+      <!-- Hero search -->
+      <div class="search-card" id="heroSearch">
+        <div class="search-field" id="fieldMed">
+          <div class="sf-icon">
+            <svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></svg>
+          </div>
+          <div class="sf-body">
+            <div class="sf-label">Medication</div>
+            <input class="sf-input" id="medInput" placeholder="e.g. Adderall 20mg" autocomplete="off" />
+            <div class="suggest" id="medSuggest">
+              <div class="suggest-item" data-med="Adderall 20mg"><div><div class="si-name">Adderall 20mg</div><div class="si-meta">Amphetamine / Dextroamphetamine · Schedule II</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">branded</span></div>
+              <div class="suggest-item" data-med="Sudafed (pseudoephedrine)"><div><div class="si-name">Sudafed</div><div class="si-meta">Pseudoephedrine HCl · OTC in US</div></div></div>
+              <div class="suggest-item" data-med="Vyvanse 50mg"><div><div class="si-name">Vyvanse 50mg</div><div class="si-meta">Lisdexamfetamine · Schedule II</div></div></div>
+              <div class="suggest-item" data-med="Xanax 1mg"><div><div class="si-name">Xanax 1mg</div><div class="si-meta">Alprazolam · Schedule IV</div></div></div>
+              <div class="suggest-item" data-med="CBD oil 1500mg"><div><div class="si-name">CBD oil 1500mg</div><div class="si-meta">Cannabidiol · non-prescription</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="search-field" id="fieldDest">
+          <div class="sf-icon blue">
+            <svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="sf-body">
+            <div class="sf-label">Destination</div>
+            <input class="sf-input" id="destInput" placeholder="Country or airport code" autocomplete="off" />
+            <div class="suggest" id="destSuggest">
+              <div class="suggest-item" data-dest="Japan"><div><div class="si-name">Japan</div><div class="si-meta">Tokyo · Osaka · MHLW jurisdiction</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">JPN</span></div>
+              <div class="suggest-item" data-dest="United Arab Emirates"><div><div class="si-name">United Arab Emirates</div><div class="si-meta">Dubai · Abu Dhabi · MoHAP jurisdiction</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">ARE</span></div>
+              <div class="suggest-item" data-dest="Singapore"><div><div class="si-name">Singapore</div><div class="si-meta">HSA jurisdiction</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">SGP</span></div>
+              <div class="suggest-item" data-dest="South Korea"><div><div class="si-name">South Korea</div><div class="si-meta">MFDS jurisdiction</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">KOR</span></div>
+              <div class="suggest-item" data-dest="Mexico"><div><div class="si-name">Mexico</div><div class="si-meta">COFEPRIS jurisdiction</div></div><span class="mono" style="font-size:11px;color:var(--ink-3)">MEX</span></div>
+            </div>
+          </div>
+        </div>
+        <button class="search-go" onclick="runSearch()">
+          Check
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+
+      <div class="hero-meta">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Results in &lt; 20s</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg> 214 country authorities</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg> 12,400+ compounds</span>
+      </div>
+
+      <!-- Floating example result cards -->
+      <div class="floaters" aria-hidden="true">
+        <div class="floater f1">
+          <div class="status-row">
+            <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+          </div>
+          <div class="f-title">Adderall · 20mg</div>
+          <div class="f-meta">Japan · MHLW</div>
+        </div>
+
+        <div class="floater f2">
+          <div class="status-row">
+            <span class="status-badge sb-sky"><span class="sb-dot"></span> Prescription-only</span>
+          </div>
+          <div class="f-title">Tramadol · 50mg</div>
+          <div class="f-meta">Spain · AEMPS — doctor's note in English</div>
+        </div>
+
+        <div class="floater f-center">
+          <div style="font-family:'Montserrat';font-weight:800;font-size:12px;letter-spacing:0.08em;color:#DDB943;text-transform:uppercase">Verified answer</div>
+          <div class="f-route" style="color:#fff">
+            NYC
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M14 6l6 6-6 6"/></svg>
+            DXB
+          </div>
+          <div style="color:#B4A897;font-size:12px;margin-top:2px">Codeine · 30mg · Restricted</div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid #3A3024;font-size:11px;color:#8A7E6D;font-family:'JetBrains Mono',monospace">MoHAP Federal Decree 14/2020<br/>Verified Apr 11, 2026</div>
+        </div>
+
+        <div class="floater f3">
+          <div class="status-row">
+            <span class="status-badge sb-amber"><span class="sb-dot"></span> Restricted</span>
+          </div>
+          <div class="f-title">Pseudoephedrine</div>
+          <div class="f-meta">Mexico · COFEPRIS</div>
+        </div>
+
+        <div class="floater f4">
+          <div class="status-row">
+            <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+          </div>
+          <div class="f-title">Ibuprofen · 200mg</div>
+          <div class="f-meta">Germany · BfArM</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trusted">
+    <div class="trusted-label">Sourced directly from government authorities</div>
+    <div class="src-logos">
+      <span>MHLW 日本</span>
+      <span>MoHAP الإمارات</span>
+      <span>HSA SG</span>
+      <span>COFEPRIS MX</span>
+      <span>TGA AU</span>
+      <span>Health Canada</span>
+    </div>
+  </div>
+
+  <!-- Three card feature section -->
+  <section class="block" style="background: var(--cream);">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-tabs">
+          <button class="active">Search</button>
+          <button>Trip</button>
+          <button>Share</button>
+        </div>
+        <h2>Ask once. Get the whole answer.</h2>
+        <p>Compliance isn't a yes/no — it's a stack of documents, thresholds, and deadlines. We surface all of it.</p>
+      </div>
+      <div class="triad">
+        <div class="tcard tinted-2">
+          <div class="tc-visual">
+            <!-- stylized placeholder: pill on a ticket -->
+            <svg viewBox="0 0 220 130" width="220">
+              <rect x="20" y="28" width="180" height="80" rx="10" fill="#fff" stroke="#E6DCCC"/>
+              <rect x="20" y="66" width="180" height="4" fill="#EFE6D8"/>
+              <circle cx="20" cy="68" r="6" fill="#F5EEE4"/><circle cx="200" cy="68" r="6" fill="#F5EEE4"/>
+              <text x="40" y="58" font-family="Montserrat" font-weight="900" font-size="14" fill="#1F1A15">ADDERALL 20MG</text>
+              <text x="40" y="92" font-family="JetBrains Mono" font-size="10" fill="#6E6357">MHLW · JPN · APR 11</text>
+              <rect x="130" y="80" width="60" height="16" rx="4" fill="#F5DFD8"/>
+              <text x="160" y="91" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="9" fill="#9C3D2A">BANNED</text>
+            </svg>
+          </div>
+          <h3>One search, every document.</h3>
+          <p>Permit lead times, daily quantity caps, translation requirements, and the exact form ID you need — returned in one page, not a 40-link rabbit hole.</p>
+        </div>
+
+        <div class="tcard tinted-1">
+          <div class="tc-visual">
+            <!-- layover diagram -->
+            <svg viewBox="0 0 240 150" width="240">
+              <circle cx="30" cy="80" r="8" fill="#5B9BC5"/>
+              <circle cx="120" cy="80" r="8" fill="#8A5E14"/>
+              <circle cx="210" cy="80" r="8" fill="#2F6B3F"/>
+              <path d="M38 80 Q 75 40 112 80" fill="none" stroke="#5B9BC5" stroke-width="2" stroke-dasharray="3,4"/>
+              <path d="M128 80 Q 165 40 202 80" fill="none" stroke="#8A5E14" stroke-width="2" stroke-dasharray="3,4"/>
+              <text x="30" y="110" text-anchor="middle" font-family="Montserrat" font-weight="700" font-size="10" fill="#1F1A15">JFK</text>
+              <text x="120" y="110" text-anchor="middle" font-family="Montserrat" font-weight="700" font-size="10" fill="#1F1A15">DXB</text>
+              <text x="210" y="110" text-anchor="middle" font-family="Montserrat" font-weight="700" font-size="10" fill="#1F1A15">BKK</text>
+              <rect x="80" y="120" width="80" height="18" rx="9" fill="#F7ECD4"/>
+              <text x="120" y="132" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="9" fill="#8A5E14">LAYOVER TRAP</text>
+            </svg>
+          </div>
+          <h3>The layover trap, defused.</h3>
+          <p>Your medication might be legal at origin and destination — but your 3-hour transit country could still confiscate it. We catch that, specifically.</p>
+        </div>
+
+        <div class="tcard tinted-3">
+          <div class="tc-visual">
+            <svg viewBox="0 0 220 150" width="220">
+              <rect x="50" y="14" width="120" height="120" rx="14" fill="#fff" stroke="#E6DCCC"/>
+              <rect x="62" y="26" width="70" height="8" rx="4" fill="#1F1A15"/>
+              <rect x="62" y="42" width="96" height="6" rx="3" fill="#EFE6D8"/>
+              <rect x="62" y="56" width="60" height="6" rx="3" fill="#EFE6D8"/>
+              <rect x="62" y="78" width="96" height="20" rx="6" fill="#F5DFD8"/>
+              <text x="110" y="92" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="9" fill="#9C3D2A">BANNED · JAPAN</text>
+              <rect x="62" y="108" width="36" height="14" rx="4" fill="#EFE6D8"/>
+              <rect x="104" y="108" width="54" height="14" rx="4" fill="#DE6438"/>
+            </svg>
+          </div>
+          <h3>Proof you can send in a text.</h3>
+          <p>A shareable risk card that fits a message bubble — for the friend, the employer, or the customs officer who wants to see the source.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Secondary dark hero -->
+  <section class="block" style="background: var(--ink); color: #EFE6D8; padding: 90px 0;">
+    <div class="wrap" style="display:grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center;">
+      <div>
+        <div style="font-family:'Montserrat';font-weight:700;font-size:12px;letter-spacing:0.08em;color:var(--gold);text-transform:uppercase;margin-bottom:14px">For teams & pharmacies</div>
+        <h2 style="color:#fff;font-size:52px;font-weight:900;letter-spacing:-0.03em;line-height:1;margin:0 0 18px">Give your patients an answer they can trust — before they board.</h2>
+        <p style="color:#B4A897;font-size:17px;line-height:1.6;margin:0 0 28px;max-width:520px">Embed CheckOrbit in your pharmacy consult, travel clinic intake, or corporate travel portal. Every result carries your white-label footer and our source chain.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary">Request API access <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+          <button class="btn" style="background:transparent;color:#fff;border:1.5px solid #4a4034">Book a demo</button>
+        </div>
+      </div>
+      <div style="background: #2A231B; border-radius: 20px; padding: 26px; border: 1px solid #3A3024;">
+        <div style="font-family:'JetBrains Mono';font-size:11px;color:#8A7E6D;margin-bottom:12px">POST /api/v1/check</div>
+        <pre style="font-family:'JetBrains Mono';font-size:12.5px;color:#E8A972;margin:0;line-height:1.7;white-space:pre-wrap"><span style="color:#B4A897">{</span>
+  <span style="color:#DDB943">"medication"</span>: <span style="color:#fff">"Adderall 20mg"</span>,
+  <span style="color:#DDB943">"destination"</span>: <span style="color:#fff">"JPN"</span>,
+  <span style="color:#DDB943">"transit"</span>: [<span style="color:#fff">"DXB"</span>],
+  <span style="color:#DDB943">"quantity_days"</span>: <span style="color:#5B9BC5">30</span>
+<span style="color:#B4A897">}</span>
+
+<span style="color:#8A7E6D">→ 200 OK  (1.8s)</span>
+<span style="color:#B4A897">{</span>
+  <span style="color:#DDB943">"status"</span>: <span style="color:#fff">"BANNED"</span>,
+  <span style="color:#DDB943">"source"</span>: <span style="color:#fff">"MHLW 1951.14"</span>,
+  <span style="color:#DDB943">"verified"</span>: <span style="color:#fff">"2026-04-11"</span>
+<span style="color:#B4A897">}</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#">
+          <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+          Check<span style="opacity:.6">Orbit</span>
+        </a>
+        <p class="foot-note">CheckOrbit is not legal or medical advice. Always carry original prescriptions and follow the verification steps for your destination.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#">How it works</a>
+        <a href="#">Countries</a>
+        <a href="#">Compounds</a>
+        <a href="#">Pricing</a>
+      </div>
+      <div>
+        <h4>For business</h4>
+        <a href="#">Pharmacies</a>
+        <a href="#">Travel clinics</a>
+        <a href="#">API</a>
+        <a href="#">White-label</a>
+      </div>
+      <div>
+        <h4>Sources</h4>
+        <a href="#">Verification method</a>
+        <a href="#">Source registry</a>
+        <a href="#">Update log</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 CheckOrbit · Verified by people, served by software.</div>
+      <div>Last global source refresh: Apr 11, 2026 · 04:20 UTC</div>
+    </div>
+  </footer>
+</main>
+
+
+<!-- ============ RESULT ============ -->
+<main id="result" class="screen" data-screen-label="02 Single result">
+  <nav class="nav">
+    <a class="brand" href="#" onclick="return go('home')">
+      <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+      Check<span style="opacity:.6;font-weight:700">Orbit</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">Product</a>
+      <a href="#">Countries</a>
+      <a href="#">For pharmacists</a>
+      <a href="#">Pricing</a>
+      <a href="#">Sources</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm">Save this check</button>
+      <button class="btn btn-primary btn-sm">New search</button>
+    </div>
+  </nav>
+
+  <div class="result-wrap">
+    <div class="breadcrumbs">
+      <a href="#" onclick="return go('home')">Search</a>
+      <span class="sep">/</span>
+      <span>United States</span>
+      <span class="sep">→</span>
+      <span class="cur">Japan</span>
+      <span class="sep">/</span>
+      <span class="cur">Adderall 20mg</span>
+    </div>
+
+    <div class="result-top">
+      <div class="result-head">
+        <div>
+          <div class="result-route">
+            <span style="font-family:'JetBrains Mono';color:var(--ink)">USA</span>
+            <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M14 6l6 6-6 6"/></svg>
+            <span style="font-family:'JetBrains Mono';color:var(--ink)">JPN</span>
+            <span style="margin-left:10px">· Travel 21 May 2026 · 14 days</span>
+          </div>
+          <h1 class="result-title">Adderall <span class="sep">/</span> Japan</h1>
+          <div class="result-quickmeta">
+            <span><svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></svg> 20mg tablets · 30-day supply</span>
+            <span><svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Answered in 1.8s</span>
+            <span><svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Verified Apr 11, 2026</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <button class="btn btn-ghost btn-sm" onclick="go('share')">
+            <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+            Share
+          </button>
+        </div>
+      </div>
+
+      <div class="verdict v-rose">
+        <div class="verdict-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg>
+        </div>
+        <div>
+          <div class="v-label">Banned — do not carry.</div>
+          <div class="v-sub">Amphetamine-based stimulants are prohibited under Japan's Stimulants Control Act. There is no tourist permit available. Carrying any quantity is a criminal offense.</div>
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="rg-main">
+          <div class="panel">
+            <h3>Compound breakdown <span class="count">2</span></h3>
+            <div class="compound-row">
+              <div>
+                <div class="cr-name">Dextroamphetamine sulfate</div>
+                <div class="cr-meta">6.3mg per tablet · the banned compound</div>
+                <div class="cr-schedule">
+                  <b>JPN</b> Kakuseizai (Stimulants Act)
+                  <span>·</span>
+                  <b>US</b> DEA Schedule II
+                </div>
+              </div>
+              <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+            </div>
+            <div class="compound-row">
+              <div>
+                <div class="cr-name">Amphetamine aspartate monohydrate</div>
+                <div class="cr-meta">13.7mg per tablet · the banned compound</div>
+                <div class="cr-schedule">
+                  <b>JPN</b> Kakuseizai (Stimulants Act)
+                  <span>·</span>
+                  <b>US</b> DEA Schedule II
+                </div>
+              </div>
+              <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>What to do instead</h3>
+            <ol class="nextsteps">
+              <li>
+                <div class="ns-t">Speak to your prescriber before Apr 25.</div>
+                <div class="ns-d">Discuss a short-term switch to a non-stimulant (e.g. atomoxetine) for the 14-day trip. Atomoxetine is legal in Japan with prescription.</div>
+              </li>
+              <li>
+                <div class="ns-t">File a Yakkan Shoumei certificate for the replacement.</div>
+                <div class="ns-d">Required for any prescription import. Processing takes 4–14 business days at the Kanto-Shinetsu Regional Bureau.</div>
+              </li>
+              <li>
+                <div class="ns-t">Carry a doctor's letter translated into Japanese.</div>
+                <div class="ns-d">Include diagnosis, dosage, and the reason the replacement was prescribed. Not optional at customs.</div>
+              </li>
+              <li>
+                <div class="ns-t">Plan refills through a Japanese clinic if staying past 30 days.</div>
+                <div class="ns-d">Atomoxetine is prescribed by licensed psychiatrists in most major cities. We list 9 English-speaking clinics in Tokyo.</div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="panel">
+            <h3>Quantity & permit thresholds (for context)</h3>
+            <div class="quantity-grid">
+              <div class="qstat">
+                <div class="label">Daily cap</div>
+                <div class="value">0 <small>tablets</small></div>
+                <div class="hint">No quantity is permitted, including a single dose.</div>
+              </div>
+              <div class="qstat">
+                <div class="label">Permit</div>
+                <div class="value">None available</div>
+                <div class="hint">No tourist permit exists for this compound in Japan.</div>
+              </div>
+              <div class="qstat">
+                <div class="label">Lead time</div>
+                <div class="value">N/A</div>
+                <div class="hint">For your alternative (atomoxetine) — 4 to 14 business days.</div>
+              </div>
+              <div class="qstat">
+                <div class="label">Penalty</div>
+                <div class="value">Criminal</div>
+                <div class="hint">Detention + prosecution. First-time tourist cases still prosecuted.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="rg-side">
+          <div class="panel source-card">
+            <h3>Government sources <span class="count">3</span></h3>
+            <div class="source-item">
+              <div class="source-agency">Ministry of Health, Labour and Welfare (MHLW)</div>
+              <div class="source-url">mhlw.go.jp/stf/seisakunitsuite/bunya/iyakuhin/</div>
+              <div class="source-verify"><span class="dot"></span> Verified by CheckOrbit · Apr 11, 2026</div>
+            </div>
+            <div class="source-item">
+              <div class="source-agency">Stimulants Control Act · Act No. 252 of 1951</div>
+              <div class="source-url">elaws.e-gov.go.jp/document?lawid=326AC0000000252</div>
+              <div class="source-verify"><span class="dot"></span> Cited 2024 revision · Apr 11, 2026</div>
+            </div>
+            <div class="source-item">
+              <div class="source-agency">Narcotics Control Department · Tokyo</div>
+              <div class="source-url">ncd.mhlw.go.jp/en/travelers/</div>
+              <div class="source-verify"><span class="dot"></span> Verified · Apr 08, 2026</div>
+            </div>
+          </div>
+
+          <div class="panel" style="background: var(--ice-soft); border-color: var(--ice);">
+            <h3 style="color: var(--sky-ink)">Related checks</h3>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <a href="#" onclick="return go('result')" style="text-decoration:none;color:var(--ink);display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--ice)">
+                <div>
+                  <div style="font-family:'Montserrat';font-weight:800;font-size:13px">Atomoxetine 40mg · Japan</div>
+                  <div style="font-size:12px;color:var(--ink-3)">Recommended alternative</div>
+                </div>
+                <span class="status-badge sb-sky"><span class="sb-dot"></span> RX</span>
+              </a>
+              <a href="#" onclick="return go('result')" style="text-decoration:none;color:var(--ink);display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--ice)">
+                <div>
+                  <div style="font-family:'Montserrat';font-weight:800;font-size:13px">Vyvanse 50mg · Japan</div>
+                  <div style="font-size:12px;color:var(--ink-3)">Same class · also banned</div>
+                </div>
+                <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+              </a>
+              <a href="#" onclick="return go('result')" style="text-decoration:none;color:var(--ink);display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--ice)">
+                <div>
+                  <div style="font-family:'Montserrat';font-weight:800;font-size:13px">Adderall XR · South Korea</div>
+                  <div style="font-size:12px;color:var(--ink-3)">Rule varies by compound</div>
+                </div>
+                <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<!-- ============ MULTI-MED STACK ============ -->
+<main id="stack" class="screen" data-screen-label="03 Multi-med stack">
+  <nav class="nav">
+    <a class="brand" href="#" onclick="return go('home')">
+      <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+      Check<span style="opacity:.6;font-weight:700">Orbit</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">My trips</a>
+      <a href="#">My medications</a>
+      <a href="#">Checks</a>
+      <a href="#">Account</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm">Export PDF</button>
+      <button class="btn btn-primary btn-sm">+ Add medication</button>
+    </div>
+  </nav>
+
+  <div class="stack-wrap">
+    <div class="breadcrumbs">
+      <a href="#" onclick="return go('home')">My trips</a>
+      <span class="sep">/</span>
+      <span>Tokyo · 21 May – 03 Jun</span>
+      <span class="sep">/</span>
+      <span class="cur">All medications</span>
+    </div>
+
+    <div class="stack-head">
+      <div>
+        <h1>Your travel kit for Japan</h1>
+        <p>Checked against MHLW regulations · last refreshed 3 minutes ago.</p>
+      </div>
+      <div class="summary-pills">
+        <div class="summary-pill rose"><div class="sp-count">2</div><div class="sp-label">Banned</div></div>
+        <div class="summary-pill amber"><div class="sp-count">1</div><div class="sp-label">Restricted</div></div>
+        <div class="summary-pill sky"><div class="sp-count">2</div><div class="sp-label">Rx-only</div></div>
+        <div class="summary-pill sage"><div class="sp-count">3</div><div class="sp-label">Legal</div></div>
+      </div>
+    </div>
+
+    <div class="med-stack">
+      <div class="med-card banned">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Adderall 20mg</span>
+            <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+          </div>
+          <div class="mc-meta">Amphetamine / Dextroamphetamine · Schedule II · USA prescription</div>
+          <div class="med-body">No tourist permit. Switch to non-stimulant alternative before travel. <b>Action needed by Apr 25.</b></div>
+        </div>
+        <div class="med-qty">0<small>Permitted</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card banned">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Vyvanse 50mg</span>
+            <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+          </div>
+          <div class="mc-meta">Lisdexamfetamine · Schedule II</div>
+          <div class="med-body">Same class as Adderall. A single alternative (atomoxetine) may replace both; one prescription covers both gaps.</div>
+        </div>
+        <div class="med-qty">0<small>Permitted</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card restricted">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Codeine 30mg</span>
+            <span class="status-badge sb-amber"><span class="sb-dot"></span> Restricted</span>
+          </div>
+          <div class="mc-meta">Narcotic analgesic · Schedule II in JPN</div>
+          <div class="med-body">Requires Yakkan Shoumei certificate if supply exceeds 10 days. You have 14 days queued — permit needed by <b>May 06</b> (14-day lead).</div>
+        </div>
+        <div class="med-qty">42<small>Max tablets</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card prescription">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Sertraline 50mg</span>
+            <span class="status-badge sb-sky"><span class="sb-dot"></span> Prescription-only</span>
+          </div>
+          <div class="mc-meta">SSRI · non-controlled</div>
+          <div class="med-body">Carry in original pharmacy-labeled bottle. Doctor's letter recommended but not required for 14-day supply.</div>
+        </div>
+        <div class="med-qty">30<small>Max tablets</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card prescription">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Albuterol inhaler</span>
+            <span class="status-badge sb-sky"><span class="sb-dot"></span> Prescription-only</span>
+          </div>
+          <div class="mc-meta">Salbutamol · bronchodilator</div>
+          <div class="med-body">One month's supply permitted. No certificate required. Pack in carry-on.</div>
+        </div>
+        <div class="med-qty">2<small>Inhalers</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card legal">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Ibuprofen 200mg</span>
+            <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+          </div>
+          <div class="mc-meta">NSAID · OTC</div>
+          <div class="med-body">Bring up to a 2-month personal supply without declaration.</div>
+        </div>
+        <div class="med-qty">120<small>Max tablets</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card legal">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Melatonin 5mg</span>
+            <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+          </div>
+          <div class="mc-meta">Supplement · non-controlled</div>
+          <div class="med-body">Sold OTC in Japan. Personal supply fine.</div>
+        </div>
+        <div class="med-qty">60<small>Max tablets</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+
+      <div class="med-card legal">
+        <div class="med-main">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span class="mc-title">Loratadine 10mg</span>
+            <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+          </div>
+          <div class="mc-meta">Antihistamine · OTC</div>
+          <div class="med-body">No restrictions for a personal supply.</div>
+        </div>
+        <div class="med-qty">90<small>Max tablets</small></div>
+        <button class="btn btn-ghost btn-sm" onclick="go('result')">Open →</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:40px; background: var(--ink); color:#EFE6D8; border-color: transparent;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+        <div>
+          <div style="font-family:'Montserrat';font-weight:800;font-size:18px;color:#fff;letter-spacing:-0.01em">Ready to act?</div>
+          <div style="font-size:13.5px;color:#B4A897;margin-top:4px">Generate a prescriber handoff: one PDF with your entire kit, the banned items, and the proposed alternatives.</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn" style="background: transparent; color: #fff; border:1.5px solid #4a4034">Email my doctor</button>
+          <button class="btn btn-primary">Generate handoff PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<!-- ============ ITINERARY (LAYOVER TRAP) ============ -->
+<main id="itin" class="screen" data-screen-label="04 Itinerary layover trap">
+  <nav class="nav">
+    <a class="brand" href="#" onclick="return go('home')">
+      <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+      Check<span style="opacity:.6;font-weight:700">Orbit</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">My trips</a>
+      <a href="#">Medications</a>
+      <a href="#">Sources</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm">Switch trip</button>
+      <button class="btn btn-primary btn-sm">Re-check route</button>
+    </div>
+  </nav>
+
+  <div class="itin-wrap">
+    <div class="breadcrumbs">
+      <a href="#">My trips</a>
+      <span class="sep">/</span>
+      <span class="cur">New York → Bangkok (via Dubai)</span>
+    </div>
+
+    <div class="itin-head">
+      <h1>Layover trap on your route.</h1>
+      <p class="itin-sub">Your medications are legal in New York and Bangkok. They are not legal during your 3h10m stop in Dubai. Here's what changes.</p>
+    </div>
+
+    <div class="trip-banner">
+      <div class="trip-route-big">
+        JFK
+        <svg class="tr-plane" width="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M14 6l6 6-6 6"/></svg>
+        DXB
+        <svg class="tr-plane" width="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M14 6l6 6-6 6"/></svg>
+        BKK
+      </div>
+      <div>
+        <div class="trip-dates">Departing Tue, May 21 · 10:40 PM · Emirates EK204 → EK372</div>
+      </div>
+    </div>
+
+    <div class="conflict">
+      <div class="conflict-ico">
+        <svg width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18.5v.01"/></svg>
+      </div>
+      <div>
+        <h4>Your transit country, the UAE, is stricter than either endpoint.</h4>
+        <p>Even if you never leave the airport, UAE customs reserves the right to inspect carry-on during international transfers. Codeine &gt; 10 days' supply and CBD products are controlled regardless of onward destination.</p>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="stop ok">
+        <div class="stop-head">
+          <div>
+            <div class="stop-type">Origin · United States</div>
+            <div class="stop-city">New York · JFK</div>
+          </div>
+          <div class="stop-time">Tue May 21 · 22:40 departure</div>
+        </div>
+        <div class="stop-body">
+          <div class="mini sage">
+            <div class="mname">Codeine 30mg</div>
+            <div class="mstat">Rx · legal</div>
+          </div>
+          <div class="mini sage">
+            <div class="mname">CBD oil 1500mg</div>
+            <div class="mstat">OTC · legal</div>
+          </div>
+          <div class="mini sage">
+            <div class="mname">Sertraline 50mg</div>
+            <div class="mstat">Rx · legal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop danger">
+        <div class="stop-head">
+          <div>
+            <div class="stop-type">Transit · United Arab Emirates · 3h 10m layover</div>
+            <div class="stop-city">Dubai · DXB</div>
+          </div>
+          <div class="stop-time">Wed May 22 · 19:05 – 22:15</div>
+        </div>
+        <div class="stop-body">
+          <div class="mini amber">
+            <div class="mname">Codeine 30mg</div>
+            <div class="mstat">Permit required</div>
+          </div>
+          <div class="mini rose">
+            <div class="mname">CBD oil 1500mg</div>
+            <div class="mstat">Banned · any amount</div>
+          </div>
+          <div class="mini sky">
+            <div class="mname">Sertraline 50mg</div>
+            <div class="mstat">Rx letter advised</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:14px;border-radius:12px;background:var(--cream);font-size:13px;">
+          <b style="font-family:'Montserrat';font-weight:800">Resolution:</b>
+          Apply for MoHAP transit permit for codeine (2 business days), remove all CBD products before departure, and carry a doctor's letter in Arabic or English for the SSRI.
+        </div>
+      </div>
+
+      <div class="stop ok">
+        <div class="stop-head">
+          <div>
+            <div class="stop-type">Destination · Thailand · 12 days</div>
+            <div class="stop-city">Bangkok · BKK</div>
+          </div>
+          <div class="stop-time">Thu May 23 · 08:30 arrival</div>
+        </div>
+        <div class="stop-body">
+          <div class="mini sky">
+            <div class="mname">Codeine 30mg</div>
+            <div class="mstat">Rx · declare at customs</div>
+          </div>
+          <div class="mini amber">
+            <div class="mname">CBD oil 1500mg</div>
+            <div class="mstat">&lt; 0.2% THC only</div>
+          </div>
+          <div class="mini sage">
+            <div class="mname">Sertraline 50mg</div>
+            <div class="mstat">Rx · legal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 26px; padding: 22px; border-radius: 16px; background: var(--sky-bg); border: 1px solid var(--ice); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+      <div style="max-width:540px">
+        <div style="font-family:'Montserrat';font-weight:900;font-size:22px;letter-spacing:-0.02em;color:var(--sky-ink);">Resolve everything in one pass.</div>
+        <div style="color:var(--sky-ink);font-size:14px;margin-top:4px">We'll guide you through the MoHAP permit application and rewrite your pack list for DXB transit. Takes ~9 minutes.</div>
+      </div>
+      <button class="btn btn-blue">Start resolution →</button>
+    </div>
+  </div>
+</main>
+
+
+<!-- ============ SHARE CARD ============ -->
+<main id="share" class="screen" data-screen-label="05 Share card">
+  <nav class="nav">
+    <a class="brand" href="#" onclick="return go('home')">
+      <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+      Check<span style="opacity:.6;font-weight:700">Orbit</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">My trips</a>
+      <a href="#">Medications</a>
+      <a href="#">Sources</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost btn-sm" onclick="go('result')">← Back to result</button>
+    </div>
+  </nav>
+
+  <div class="share-wrap">
+    <aside class="share-panel">
+      <div class="breadcrumbs" style="margin-bottom:10px">
+        <span>Adderall</span><span class="sep">→</span><span class="cur">Japan</span>
+      </div>
+      <h2>Make the risk impossible to ignore.</h2>
+      <p>A shareable card with the verdict, the source, and the deadline — formatted for the platform you're sending it on.</p>
+
+      <div class="tweak-row">
+        <label>Status to feature</label>
+        <div class="tweak-seg" id="shareStatusSeg">
+          <button class="on" data-status="banned">Banned</button>
+          <button data-status="restricted">Restricted</button>
+          <button data-status="prescription">Rx</button>
+          <button data-status="legal">Legal</button>
+        </div>
+      </div>
+
+      <div class="tweak-row" style="margin-top:14px">
+        <label>Format</label>
+        <div class="share-opts" id="shareFmt">
+          <button class="share-opt active" data-fmt="story">Instagram Story<div class="so-sub">9 : 16 portrait</div></button>
+          <button class="share-opt" data-fmt="square">Square post<div class="so-sub">1 : 1 feed</div></button>
+          <button class="share-opt" data-fmt="sms">Text message<div class="so-sub">Single bubble</div></button>
+          <button class="share-opt" data-fmt="pdf">Printable PDF<div class="so-sub">For prescribers</div></button>
+        </div>
+      </div>
+
+      <div class="share-meta">
+        <div><b style="color:var(--ink-2);font-family:'Montserrat';font-weight:700">Contains:</b> Verdict, medication, route, MHLW citation, verification date, deadline.</div>
+        <div><b style="color:var(--ink-2);font-family:'Montserrat';font-weight:700">Does not include:</b> Your personal name, dosage, or prescriber info.</div>
+      </div>
+
+      <div class="cta-row" style="margin-top:22px">
+        <button class="btn btn-primary">Download card</button>
+        <button class="btn btn-ghost">Copy link</button>
+      </div>
+    </aside>
+
+    <div class="share-canvas-wrap">
+      <div class="share-card" id="shareCard">
+        <div class="sc-brand">
+          <span class="brand-dot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%"><stop offset="0%" stop-color="#C45327"/><stop offset="30%" stop-color="#DE6438"/><stop offset="50%" stop-color="#E8A972"/><stop offset="70%" stop-color="#BDD9F0"/><stop offset="100%" stop-color="#5B9BC5"/></linearGradient></defs><g transform="rotate(-35 50 50)"><rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/></g></svg></span>
+          <span class="b-name">CheckOrbit</span>
+          <span style="margin-left:auto;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-3)">VERIFIED · APR 11 '26</span>
+        </div>
+
+        <div class="sc-route" id="scRoute">USA · JAPAN · 14 DAYS</div>
+        <div class="sc-med" id="scMed">Adderall 20mg</div>
+
+        <div class="sc-verdict banned" id="scVerdict">
+          <div class="sc-label" id="scLabel">Banned. Do not carry.</div>
+          <div class="sc-sub" id="scSub">Amphetamine-based stimulants are prohibited under Japan's Stimulants Control Act. No tourist permit exists.</div>
+        </div>
+
+        <div class="sc-facts" id="scFacts">
+          <div class="sc-fact"><div class="sf-num">0</div><div class="sf-lbl">Tablets allowed</div></div>
+          <div class="sc-fact"><div class="sf-num">N/A</div><div class="sf-lbl">Permit</div></div>
+          <div class="sc-fact"><div class="sf-num">Criminal</div><div class="sf-lbl">Penalty</div></div>
+          <div class="sc-fact"><div class="sf-num">Apr 25</div><div class="sf-lbl">Act by</div></div>
+        </div>
+
+        <div class="sc-src">
+          <b>Source:</b> Ministry of Health, Labour and Welfare (MHLW) · Stimulants Control Act No. 252 of 1951, 2024 revision. Verified by CheckOrbit Apr 11, 2026.
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<!-- Loading overlay -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-spin"></div>
+    <div class="loader-t">Checking against 3 government sources…</div>
+    <div class="loader-sub" id="loaderSub">MHLW 1951.14 · cross-ref compound tree · verifying</div>
+  </div>
+</div>
+
+
+<!-- Tweaks -->
+<div class="tweaks" id="tweaks">
+  <div class="tweaks-h">
+    <h4>Tweaks</h4>
+    <button onclick="closeTweaks()">×</button>
+  </div>
+  <div class="tweaks-body">
+    <div class="tweak-row">
+      <label>Primary</label>
+      <div class="tweak-swatches" id="tkPrimary">
+        <div class="tweak-swatch on" data-color="#DE6438" style="background:#DE6438"></div>
+        <div class="tweak-swatch" data-color="#C94F2A" style="background:#C94F2A"></div>
+        <div class="tweak-swatch" data-color="#D57A2A" style="background:#D57A2A"></div>
+        <div class="tweak-swatch" data-color="#B7542B" style="background:#B7542B"></div>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <label>Background</label>
+      <div class="tweak-seg" id="tkBg">
+        <button class="on" data-bg="cream">Cream</button>
+        <button data-bg="mist">Mist</button>
+        <button data-bg="paper">Paper</button>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <label>Headline size</label>
+      <div class="tweak-seg" id="tkScale">
+        <button data-scale="0.9">–</button>
+        <button class="on" data-scale="1">Default</button>
+        <button data-scale="1.12">+</button>
+      </div>
+    </div>
+    <div class="tweak-row">
+      <label>Hero density</label>
+      <div class="tweak-seg" id="tkFloat">
+        <button class="on" data-float="on">Floaters</button>
+        <button data-float="off">Clean</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const TWEAKS = /*EDITMODE-BEGIN*/{
+    "primary": "#C94F2A",
+    "bg": "cream",
+    "scale": 0.9,
+    "floaters": "on"
+  }/*EDITMODE-END*/;
+
+  /* ---------- Screens ---------- */
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    document.querySelectorAll('#screenbar button').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    try { localStorage.setItem('co_screen', id); } catch(e){}
+    return false;
+  }
+  document.getElementById('screenbar').addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON') go(e.target.dataset.screen);
+  });
+
+  /* restore screen */
+  try {
+    const s = localStorage.getItem('co_screen');
+    if (s) go(s);
+  } catch(e){}
+
+  /* ---------- Hero search typeahead ---------- */
+  function wireField(inputId, suggestId, fieldId) {
+    const input = document.getElementById(inputId);
+    const sug = document.getElementById(suggestId);
+    const field = document.getElementById(fieldId);
+    input.addEventListener('focus', () => sug.classList.add('open'));
+    input.addEventListener('input', () => {
+      field.classList.toggle('dirty', !!input.value);
+      sug.classList.add('open');
+    });
+    input.addEventListener('blur', () => setTimeout(() => sug.classList.remove('open'), 150));
+    sug.querySelectorAll('.suggest-item').forEach(it => {
+      it.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        input.value = it.dataset.med || it.dataset.dest || it.querySelector('.si-name').textContent;
+        field.classList.add('dirty');
+        sug.classList.remove('open');
+      });
+    });
+  }
+  wireField('medInput', 'medSuggest', 'fieldMed');
+  wireField('destInput', 'destSuggest', 'fieldDest');
+
+  function runSearch() {
+    const med = document.getElementById('medInput').value.trim() || 'Adderall 20mg';
+    const dest = document.getElementById('destInput').value.trim() || 'Japan';
+    const loader = document.getElementById('loader');
+    const sub = document.getElementById('loaderSub');
+    loader.classList.add('open');
+    const steps = [
+      'Parsing compound tree · ' + med,
+      'Cross-referencing ' + dest + ' ministry of health',
+      'Verifying source hash · MHLW 1951.14',
+      'Assembling answer'
+    ];
+    let i = 0;
+    sub.textContent = steps[0];
+    const t = setInterval(() => {
+      i++;
+      if (i >= steps.length) { clearInterval(t); return; }
+      sub.textContent = steps[i];
+    }, 450);
+    setTimeout(() => {
+      clearInterval(t);
+      loader.classList.remove('open');
+      go('result');
+    }, 1900);
+  }
+
+  /* allow Enter in either field */
+  ['medInput','destInput'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') runSearch();
+    });
+  });
+
+  /* ---------- Share card interactive ---------- */
+  const scStates = {
+    banned:       { klass:'banned',       label:'Banned. Do not carry.', sub:'Amphetamine-based stimulants are prohibited under Japan\'s Stimulants Control Act. No tourist permit exists.', facts:[['0','Tablets allowed'],['N/A','Permit'],['Criminal','Penalty'],['Apr 25','Act by']] },
+    restricted:   { klass:'restricted',   label:'Restricted — permit required.', sub:'Codeine is controlled in Japan. Supply over 10 days requires a Yakkan Shoumei import certificate.', facts:[['42','Max tablets'],['Yakkan','Permit'],['14 days','Lead time'],['May 06','File by']] },
+    prescription: { klass:'prescription', label:'Prescription-only.', sub:'SSRIs are legal with a valid prescription. Carry in original pharmacy-labeled bottle; a doctor\'s letter is recommended.', facts:[['30','Max tablets'],['None','Permit'],['N/A','Lead time'],['—','Act by']] },
+    legal:        { klass:'legal',        label:'Legal. Pack as you normally would.', sub:'OTC in Japan. Bring up to a 2-month personal supply without declaration.', facts:[['120','Max tablets'],['None','Permit'],['N/A','Lead time'],['—','Act by']] }
+  };
+
+  document.getElementById('shareStatusSeg').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#shareStatusSeg button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    const s = scStates[b.dataset.status];
+    const v = document.getElementById('scVerdict');
+    v.className = 'sc-verdict ' + s.klass;
+    document.getElementById('scLabel').textContent = s.label;
+    document.getElementById('scSub').textContent = s.sub;
+    const facts = document.getElementById('scFacts');
+    facts.innerHTML = s.facts.map(f => `<div class="sc-fact"><div class="sf-num">${f[0]}</div><div class="sf-lbl">${f[1]}</div></div>`).join('');
+  });
+
+  document.getElementById('shareFmt').addEventListener('click', (e) => {
+    const b = e.target.closest('.share-opt');
+    if (!b) return;
+    document.querySelectorAll('#shareFmt .share-opt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const card = document.getElementById('shareCard');
+    const fmt = b.dataset.fmt;
+    card.style.width = fmt === 'story' ? '380px'
+                     : fmt === 'square' ? '440px'
+                     : fmt === 'sms' ? '300px'
+                     : '460px';
+    card.style.aspectRatio = fmt === 'story' ? '9 / 16'
+                     : fmt === 'square' ? '1 / 1'
+                     : 'auto';
+  });
+
+  /* ---------- Tweaks ---------- */
+  let tweakMode = false;
+  window.addEventListener('message', (ev) => {
+    const d = ev.data || {};
+    if (d.type === '__activate_edit_mode') openTweaks();
+    if (d.type === '__deactivate_edit_mode') closeTweaks();
+  });
+
+  function openTweaks() { tweakMode = true; document.getElementById('tweaks').classList.add('open'); }
+  function closeTweaks() { tweakMode = false; document.getElementById('tweaks').classList.remove('open'); }
+
+  function applyTweaks() {
+    document.documentElement.style.setProperty('--orange', TWEAKS.primary);
+    // derive deep
+    document.documentElement.style.setProperty('--orange-deep', shade(TWEAKS.primary, -0.15));
+    const bgs = { cream: '#F5EEE4', mist: '#EDEEEA', paper: '#FAF8F4' };
+    document.body.style.background = bgs[TWEAKS.bg] || bgs.cream;
+    document.documentElement.style.setProperty('--cream', bgs[TWEAKS.bg] || bgs.cream);
+    document.querySelectorAll('h1.hero-title, .stack-head h1, .itin-head h1, .result-title').forEach(h => {
+      h.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(h).fontSize);
+      h.style.fontSize = (base * TWEAKS.scale) + 'px';
+    });
+    document.querySelector('.floaters').style.display = TWEAKS.floaters === 'off' ? 'none' : '';
+  }
+  function shade(hex, pct) {
+    const c = hex.replace('#','');
+    const n = parseInt(c, 16);
+    let r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
+    r = Math.max(0, Math.min(255, Math.round(r + 255*pct)));
+    g = Math.max(0, Math.min(255, Math.round(g + 255*pct)));
+    b = Math.max(0, Math.min(255, Math.round(b + 255*pct)));
+    return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  }
+
+  document.getElementById('tkPrimary').addEventListener('click', (e) => {
+    const s = e.target.closest('.tweak-swatch'); if (!s) return;
+    document.querySelectorAll('#tkPrimary .tweak-swatch').forEach(x => x.classList.remove('on'));
+    s.classList.add('on');
+    TWEAKS.primary = s.dataset.color; persist();
+  });
+  document.getElementById('tkBg').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#tkBg button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    TWEAKS.bg = b.dataset.bg; persist();
+  });
+  document.getElementById('tkScale').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#tkScale button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    TWEAKS.scale = parseFloat(b.dataset.scale); persist();
+  });
+  document.getElementById('tkFloat').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#tkFloat button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    TWEAKS.floaters = b.dataset.float; persist();
+  });
+  function persist() {
+    applyTweaks();
+    try {
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: TWEAKS }, '*');
+    } catch(e){}
+  }
+  applyTweaks();
+
+  // announce tweaks available AFTER listener is attached
+  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch(e){}
+</script>
+</body>
+</html>

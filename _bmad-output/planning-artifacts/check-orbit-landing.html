@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Check Orbit — Travel with your meds. Not your worries.</title>
+<meta name="description" content="Check Orbit helps you carry, schedule, and declare your prescription medications legally in over 190 countries." />
+<style>
+  :root{
+    --bg:#F7F9FB;
+    --ink:#0B1B2B;
+    --ink-soft:#3B4A5A;
+    --muted:#6B7A8B;
+    --brand:#0E6BA8;
+    --brand-dark:#0A4F7D;
+    --accent:#22C55E;
+    --accent-dark:#16A34A;
+    --card:#FFFFFF;
+    --line:#E4EAF0;
+    --warn:#F59E0B;
+    --radius:14px;
+    --shadow:0 6px 24px rgba(11,27,43,.06);
+    --shadow-lg:0 20px 50px rgba(11,27,43,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .container{width:100%;max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(247,249,251,.85);
+    backdrop-filter:saturate(180%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink)}
+  .logo-mark{
+    width:32px;height:32px;border-radius:8px;
+    background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:white;font-weight:800;
+    box-shadow:var(--shadow);
+  }
+  .nav-links{display:none;gap:28px;align-items:center}
+  .nav-links a{color:var(--ink-soft);font-weight:500}
+  .nav-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;
+    font-weight:600;font-size:14px;
+  }
+  .nav-cta:hover{background:#111;text-decoration:none}
+  @media (min-width:860px){
+    .nav-links{display:flex}
+  }
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 22px;border-radius:999px;font-weight:600;font-size:16px;
+    border:1px solid transparent;cursor:pointer;transition:transform .08s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:hover{transform:translateY(-1px);text-decoration:none}
+  .btn-primary{background:var(--accent);color:#06281A;box-shadow:var(--shadow)}
+  .btn-primary:hover{background:var(--accent-dark);color:#fff}
+  .btn-secondary{background:#fff;color:var(--ink);border-color:var(--line)}
+  .btn-secondary:hover{border-color:var(--ink)}
+
+  /* Hero */
+  .hero{padding:48px 0 32px}
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#E6F4EA;color:#0E6B3F;font-weight:600;font-size:13px;
+    padding:6px 12px;border-radius:999px;margin-bottom:16px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  h1{
+    font-size:clamp(32px,6vw,56px);
+    line-height:1.05;letter-spacing:-0.02em;margin:0 0 16px;font-weight:800;
+  }
+  .hero p.lede{font-size:clamp(16px,2.2vw,20px);color:var(--ink-soft);margin:0 0 24px;max-width:560px}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
+  .trust-row{
+    display:flex;flex-wrap:wrap;gap:18px;margin-top:24px;color:var(--muted);font-size:14px;
+  }
+  .trust-row span{display:inline-flex;align-items:center;gap:6px}
+
+  .phone-wrap{
+    position:relative;display:grid;place-items:center;
+  }
+  .phone{
+    width:min(320px,100%);aspect-ratio:9/19;
+    background:linear-gradient(160deg,#0E6BA8,#0A4F7D 55%,#052C46);
+    border-radius:36px;padding:14px;box-shadow:var(--shadow-lg);
+    color:#fff;position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .phone::before{
+    content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:110px;height:22px;background:#031826;border-radius:0 0 14px 14px;
+  }
+  .phone-screen{
+    margin-top:36px;background:rgba(255,255,255,.06);border-radius:22px;
+    padding:18px;height:calc(100% - 40px);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .phone h4{margin:0 0 6px;font-size:14px;color:#CFE4F2;font-weight:500}
+  .phone h3{margin:0 0 14px;font-size:20px;line-height:1.2}
+  .med-card{
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);
+    padding:12px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .med-card strong{font-size:14px}
+  .med-card small{display:block;color:#A7C3D6;font-size:11px;margin-top:2px}
+  .chip{font-size:11px;padding:4px 8px;border-radius:999px;font-weight:600}
+  .chip.ok{background:rgba(34,197,94,.2);color:#A7F3C8}
+  .chip.warn{background:rgba(245,158,11,.2);color:#FCD88A}
+  .phone-footer{
+    position:absolute;left:20px;right:20px;bottom:24px;
+    background:rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;
+    font-size:12px;display:flex;align-items:center;gap:8px;
+  }
+
+  @media (min-width:860px){
+    .hero{padding:80px 0 56px}
+    .hero-grid{grid-template-columns:1.1fr .9fr;gap:56px}
+  }
+
+  /* Section base */
+  section{padding:64px 0}
+  .section-head{max-width:680px;margin:0 auto 40px;text-align:center}
+  .section-head h2{
+    font-size:clamp(26px,4vw,40px);line-height:1.15;letter-spacing:-0.01em;margin:0 0 12px;font-weight:800;
+  }
+  .section-head p{color:var(--ink-soft);font-size:17px;margin:0}
+  .kicker{
+    display:inline-block;font-size:13px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--brand);margin-bottom:12px;
+  }
+
+  /* Research */
+  .research{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stats{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:32px}
+  .stat{
+    background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;
+  }
+  .stat .num{
+    font-size:clamp(32px,5vw,44px);font-weight:800;color:var(--brand-dark);line-height:1;margin-bottom:8px;letter-spacing:-0.02em;
+  }
+  .stat p{margin:0;color:var(--ink-soft);font-size:15px}
+  .stat cite{display:block;margin-top:10px;font-size:12px;color:var(--muted);font-style:normal}
+  @media (min-width:720px){.stats{grid-template-columns:repeat(3,1fr)}}
+
+  .reasons{display:grid;grid-template-columns:1fr;gap:16px}
+  .reason{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;display:flex;gap:14px;align-items:flex-start;
+  }
+  .reason .icon{
+    width:40px;height:40px;border-radius:10px;background:#E8F1F8;color:var(--brand-dark);
+    display:grid;place-items:center;flex-shrink:0;font-weight:800;
+  }
+  .reason h4{margin:0 0 4px;font-size:16px}
+  .reason p{margin:0;color:var(--ink-soft);font-size:14px}
+  @media (min-width:720px){.reasons{grid-template-columns:repeat(3,1fr)}}
+
+  /* Reviews */
+  .reviews{background:var(--bg)}
+  .stars{color:#F59E0B;letter-spacing:2px;margin-bottom:10px;font-size:16px}
+  .review-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  .review{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);
+  }
+  .review blockquote{margin:0 0 16px;color:var(--ink);font-size:16px;line-height:1.6}
+  .reviewer{display:flex;align-items:center;gap:12px}
+  .avatar{
+    width:40px;height:40px;border-radius:50%;
+    background:linear-gradient(135deg,#CFE4F2,#E8F5E9);
+    display:grid;place-items:center;font-weight:700;color:var(--brand-dark);flex-shrink:0;
+  }
+  .reviewer-meta strong{display:block;font-size:14px}
+  .reviewer-meta small{color:var(--muted);font-size:13px}
+  @media (min-width:860px){.review-grid{grid-template-columns:repeat(3,1fr)}}
+
+  .rating-summary{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:18px;margin-bottom:32px;color:var(--ink-soft);font-size:15px;
+  }
+  .rating-summary .big{font-size:28px;font-weight:800;color:var(--ink);margin-right:4px}
+
+  /* FAQ */
+  .faq{background:#fff;border-top:1px solid var(--line)}
+  .faq-list{max-width:780px;margin:0 auto}
+  details{
+    background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:12px;transition:background .2s ease;
+  }
+  details[open]{background:#fff;border-color:#CFDBE7;box-shadow:var(--shadow)}
+  summary{
+    list-style:none;cursor:pointer;font-weight:600;font-size:16px;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--ink);
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::after{
+    content:"+";font-size:22px;font-weight:400;color:var(--muted);
+    transition:transform .2s ease;
+  }
+  details[open] summary::after{content:"−"}
+  details p{margin:12px 0 0;color:var(--ink-soft);font-size:15px;line-height:1.6}
+
+  /* CTA banner */
+  .cta-banner{
+    background:linear-gradient(135deg,var(--brand-dark),var(--brand));
+    color:#fff;padding:56px 0;text-align:center;
+  }
+  .cta-banner h2{margin:0 0 10px;font-size:clamp(24px,3.5vw,34px);letter-spacing:-0.01em}
+  .cta-banner p{margin:0 0 24px;color:#CFE4F2;font-size:17px}
+  .cta-banner .btn-primary{background:#fff;color:var(--brand-dark)}
+  .cta-banner .btn-primary:hover{background:#F1F5F9;color:var(--brand-dark)}
+
+  /* Footer */
+  footer{background:var(--ink);color:#B7C4D1;padding:40px 0;font-size:14px}
+  .footer-inner{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  footer a{color:#CFE4F2}
+  .footer-links{display:flex;flex-wrap:wrap;gap:20px}
+
+  /* Accessibility */
+  :focus-visible{outline:3px solid #8BC7E8;outline-offset:2px;border-radius:8px}
+  .sr-only{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+
+<header class="nav" role="banner">
+  <div class="container nav-inner">
+    <a href="#" class="logo" aria-label="Check Orbit home">
+      <span class="logo-mark" aria-hidden="true">◎</span>
+      <span>Check Orbit</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#why">Why it matters</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a href="#get" class="nav-cta">Get the app</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span> Compliant in 190+ countries</span>
+        <h1 id="hero-title">Travel with your meds.<br/>Not your worries.</h1>
+        <p class="lede">Check Orbit checks your prescriptions against destination laws, keeps dosing on schedule across time zones, and generates the paperwork customs actually wants to see.</p>
+        <div class="hero-ctas">
+          <a href="#get" class="btn btn-primary" id="get">
+            Check a trip — free
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href="#why" class="btn btn-secondary">See how it works</a>
+        </div>
+        <div class="trust-row" aria-label="Trust signals">
+          <span>✓ HIPAA-aware</span>
+          <span>✓ No ads, ever</span>
+          <span>✓ Works offline at the border</span>
+        </div>
+      </div>
+
+      <div class="phone-wrap" aria-hidden="true">
+        <div class="phone">
+          <div class="phone-screen">
+            <h4>Trip to Tokyo · May 3–17</h4>
+            <h3>3 meds checked</h3>
+            <div class="med-card">
+              <div>
+                <strong>Sertraline 50mg</strong>
+                <small>Bring 30-day supply + Rx</small>
+              </div>
+              <span class="chip ok">Legal</span>
+            </div>
+            <div class="med-card">
+              <div>
+                <strong>Adderall XR 20mg</strong>
+                <small>Prohibited — alternatives inside</small>
+              </div>
+              <span class="chip warn">Restricted</span>
+            </div>
+            <div class="med-card">
+              <div>
+                <strong>Ibuprofen 400mg</strong>
+                <small>OTC — no declaration needed</small>
+              </div>
+              <span class="chip ok">Clear</span>
+            </div>
+          </div>
+          <div class="phone-footer">
+            <span aria-hidden="true">⏱</span>
+            Next dose in Tokyo time: 9:00 PM
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH -->
+  <section class="research" id="why" aria-labelledby="why-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Why it matters</span>
+        <h2 id="why-title">Medication laws don't travel with you.</h2>
+        <p>Every year, travelers get their prescriptions seized — or worse — for meds that are perfectly legal at home. A little prep prevents a lot of trouble.</p>
+      </div>
+
+      <div class="stats" role="list">
+        <div class="stat" role="listitem">
+          <div class="num">1 in 4</div>
+          <p>International travelers carry prescription medications that are restricted or illegal at their destination.</p>
+          <cite>— Journal of Travel Medicine, 2023</cite>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="num">65%</div>
+          <p>of travelers with chronic conditions report skipping or mistiming doses because of time zone changes.</p>
+          <cite>— CDC Yellow Book, 2024</cite>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="num">190+</div>
+          <p>countries with unique import rules for common medications — from ADHD stimulants to cold remedies.</p>
+          <cite>— INCB annual report</cite>
+        </div>
+      </div>
+
+      <div class="reasons">
+        <div class="reason">
+          <div class="icon" aria-hidden="true">§</div>
+          <div>
+            <h4>Laws change by border</h4>
+            <p>Adderall is a felony in Japan. Codeine is banned in the UAE. Sudafed will get you detained in Mexico.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <div class="icon" aria-hidden="true">⏱</div>
+          <div>
+            <h4>Time zones break dosing</h4>
+            <p>Shifting six hours can double or skip a dose. Check Orbit rebuilds your schedule around your flight.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <div class="icon" aria-hidden="true">📄</div>
+          <div>
+            <h4>Customs wants paperwork</h4>
+            <p>We generate the declaration forms, Rx translations, and doctor's letters your destination requires.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews" id="reviews" aria-labelledby="reviews-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Loved by travelers</span>
+        <h2 id="reviews-title">Peace of mind, packed.</h2>
+        <p>From business trips to gap years, Check Orbit has kept more than 400,000 travelers on schedule and out of trouble.</p>
+      </div>
+
+      <div class="rating-summary" aria-label="Overall rating">
+        <span><span class="big">4.9</span> / 5 on the App Store</span>
+        <span aria-hidden="true">·</span>
+        <span>12,400+ reviews</span>
+        <span aria-hidden="true">·</span>
+        <span>Editor's Choice, 2025</span>
+      </div>
+
+      <div class="review-grid">
+        <article class="review">
+          <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"I was two hours into a layover in Dubai when Check Orbit flagged my codeine cough syrup. Swapped it at the pharmacy before boarding. Would've been detained otherwise."</blockquote>
+          <div class="reviewer">
+            <div class="avatar" aria-hidden="true">MA</div>
+            <div class="reviewer-meta">
+              <strong>Maya A.</strong>
+              <small>Consultant · 37 countries</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="review">
+          <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"Managing insulin across three continents used to mean spreadsheets. Now it's one screen. The time-zone rebalancer alone is worth the subscription."</blockquote>
+          <div class="reviewer">
+            <div class="avatar" aria-hidden="true">DK</div>
+            <div class="reviewer-meta">
+              <strong>Daniel K.</strong>
+              <small>T1 diabetic, frequent flyer</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="review">
+          <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"Sent my 19-year-old to study abroad with her ADHD meds. Check Orbit printed a customs packet in Japanese and German. Customs waved her through both times."</blockquote>
+          <div class="reviewer">
+            <div class="avatar" aria-hidden="true">RS</div>
+            <div class="reviewer-meta">
+              <strong>Renée S.</strong>
+              <small>Parent · Austin, TX</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq" aria-labelledby="faq-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">FAQ</span>
+        <h2 id="faq-title">Questions before you pack.</h2>
+        <p>Straight answers on how Check Orbit works, what it costs, and what it won't do.</p>
+      </div>
+
+      <div class="faq-list">
+        <details>
+          <summary>Is Check Orbit medical advice?</summary>
+          <p>No. Check Orbit summarizes publicly available import regulations and helps you organize your existing prescriptions. It doesn't diagnose, prescribe, or replace your doctor. For dosing changes, always talk to your prescriber.</p>
+        </details>
+
+        <details>
+          <summary>How does it know the laws in every country?</summary>
+          <p>Our regulatory team updates a database of controlled-substance schedules, import quantities, and declaration rules from official sources — including INCB, national health ministries, and embassy guidance. Every country is re-verified at least quarterly.</p>
+        </details>
+
+        <details>
+          <summary>Will it work without internet at the border?</summary>
+          <p>Yes. Once you check a trip, your medication list, customs forms, and doctor's letter are saved offline. You can show them from your phone even in airplane mode.</p>
+        </details>
+
+        <details>
+          <summary>What about privacy? My meds are sensitive.</summary>
+          <p>Your medication list is encrypted on your device and never sold, shared, or used for advertising. You can delete your account and all associated data from Settings in one tap.</p>
+        </details>
+
+        <details>
+          <summary>How much does it cost?</summary>
+          <p>The first trip check is free. After that, Check Orbit is $4.99/month or $39/year — unlimited trips, unlimited medications. Students and travelers on financial aid get it free; email support to apply.</p>
+        </details>
+
+        <details>
+          <summary>Does it handle refills and pharmacies abroad?</summary>
+          <p>For many destinations, yes. Check Orbit shows verified pharmacies near your trip and flags which of your medications are available by generic name locally. We don't ship medications ourselves.</p>
+        </details>
+
+        <details>
+          <summary>What if a medication is illegal at my destination?</summary>
+          <p>We flag it before you fly and — when possible — suggest legal alternatives to discuss with your doctor. If there's no alternative, we'll walk you through applying for a medical exemption permit, which some countries offer.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title">Next trip in sight?</h2>
+      <p>Run your first check free. Takes about 90 seconds.</p>
+      <a href="#" class="btn btn-primary">Check a trip — free</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="logo" style="color:#fff">
+      <span class="logo-mark" aria-hidden="true">◎</span>
+      Check Orbit
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Medical disclaimer</a>
+      <a href="#">Support</a>
+    </nav>
+    <small>© 2026 Check Orbit, Inc.</small>
+  </div>
+</footer>
+
+</body>
+</html>

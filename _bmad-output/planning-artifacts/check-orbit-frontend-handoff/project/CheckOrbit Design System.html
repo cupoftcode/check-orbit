@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CheckOrbit — Design System</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #DE6438;
+    --orange-deep: #C45327;
+    --apricot: #E8A972;
+    --apricot-soft: #F6DEC2;
+    --blue: #5B9BC5;
+    --ice: #BDD9F0;
+    --ice-soft: #E7F1FA;
+    --gold: #DDB943;
+
+    --cream: #F5EEE4;
+    --cream-2: #EFE6D8;
+    --paper: #FFFFFF;
+    --ink: #1F1A15;
+    --ink-2: #3B3228;
+    --ink-3: #6E6357;
+    --ink-4: #9A8F82;
+    --rule: #E6DCCC;
+
+    --sage-bg: #ECF3EC;
+    --sage-fg: #2F6B3F;
+    --sage-ink: #1E4A2B;
+    --sky-bg: #E4EEF6;
+    --sky-fg: #2D6A92;
+    --sky-ink: #1D4867;
+    --amber-bg: #F7ECD4;
+    --amber-fg: #8A5E14;
+    --amber-ink: #5E3F08;
+    --rose-bg: #F5DFD8;
+    --rose-fg: #9C3D2A;
+    --rose-ink: #6E2616;
+
+    --shadow-card: 0 1px 2px rgba(31,26,21,.04), 0 8px 24px -12px rgba(31,26,21,.12);
+    --shadow-lift: 0 2px 4px rgba(31,26,21,.05), 0 20px 40px -16px rgba(31,26,21,.18);
+
+    --scale: 1;
+    --density: 1;
+  }
+  html[data-theme="dark"] {
+    --cream: #17130F;
+    --cream-2: #1F1A15;
+    --paper: #1F1A15;
+    --ink: #F7F1EA;
+    --ink-2: #D6CCBC;
+    --ink-3: #9A8F82;
+    --ink-4: #6E6357;
+    --rule: #332B22;
+    --shadow-card: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    --shadow-lift: 0 2px 4px rgba(0,0,0,.3), 0 20px 40px -16px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Open Sans', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: calc(15px * var(--scale));
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em; color: var(--ink); }
+  .mono { font-family: 'JetBrains Mono', monospace; letter-spacing: 0; font-size: 0.86em; }
+  button { font-family: 'Montserrat', sans-serif; }
+
+  /* ========== LAYOUT ========== */
+  .ds-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  aside.ds-nav {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    border-right: 1px solid var(--rule);
+    padding: 28px 22px;
+    background: var(--paper);
+  }
+  .ds-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 18px;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .ds-brand svg { width: 32px; height: 32px; }
+  .ds-brand .sub { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); }
+  .ds-nav h5 {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 800; margin: 20px 0 8px;
+  }
+  .ds-nav a {
+    display: block; padding: 6px 10px; border-radius: 8px;
+    color: var(--ink-2); text-decoration: none;
+    font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px;
+  }
+  .ds-nav a:hover { background: var(--cream); color: var(--ink); }
+  .ds-nav a.active { background: var(--orange); color: #fff; }
+
+  main.ds-main {
+    padding: 56px 64px 120px;
+    max-width: 1100px;
+  }
+
+  /* Sections */
+  section.sec {
+    padding: calc(60px * var(--density)) 0;
+    border-top: 1px solid var(--rule);
+  }
+  section.sec:first-child { border-top: 0; padding-top: 20px; }
+  .sec-header { margin-bottom: 36px; }
+  .sec-eyebrow {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 10px;
+  }
+  .sec-header h2 {
+    font-size: calc(44px * var(--scale)); font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1.02;
+    margin: 0 0 10px;
+  }
+  .sec-header p {
+    color: var(--ink-3); font-size: calc(17px * var(--scale));
+    max-width: 680px; line-height: 1.55;
+  }
+  h3.sub {
+    font-size: calc(22px * var(--scale)); font-weight: 800;
+    margin: 40px 0 14px;
+  }
+  h4.sub-2 {
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 800;
+    margin: 24px 0 12px;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* TOC pill */
+  .toc-pill {
+    display: inline-flex; gap: 8px; padding: 6px;
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px;
+  }
+  .toc-pill a {
+    padding: 6px 12px; border-radius: 999px; color: var(--ink-3); text-decoration: none;
+  }
+  .toc-pill a:hover { color: var(--ink); }
+
+  /* Hero section */
+  .ds-hero {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center;
+    padding: 40px 0 60px;
+  }
+  .ds-hero h1 {
+    font-size: calc(64px * var(--scale));
+    font-weight: 900; letter-spacing: -0.035em; line-height: 0.98;
+    margin: 0 0 18px;
+  }
+  .ds-hero h1 em { font-style: normal; color: var(--orange); }
+  .ds-hero p { font-size: calc(18px * var(--scale)); color: var(--ink-3); margin: 0 0 26px; max-width: 520px; }
+  .ds-hero .badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ds-hero .badge {
+    padding: 7px 12px; border-radius: 999px;
+    background: var(--paper); border: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-3);
+  }
+  .hero-art {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: var(--shadow-card);
+    display: grid; place-items: center;
+    min-height: 280px;
+  }
+  .hero-art svg { width: 100%; max-width: 280px; height: auto; }
+
+  /* ========== BRAND LOGO ========== */
+  .panel {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 22px;
+  }
+  .logo-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .logo-tile {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 28px 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 180px;
+    gap: 12px;
+  }
+  .logo-tile.dark { background: var(--ink); border-color: transparent; }
+  .logo-tile.orange { background: var(--orange); border-color: transparent; }
+  .logo-tile.apricot { background: var(--apricot-soft); border-color: transparent; }
+  .logo-tile .lt-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-3); letter-spacing: 0.04em;
+  }
+  .logo-tile.dark .lt-label { color: #8A7E6D; }
+  .logo-tile.orange .lt-label, .logo-tile.apricot .lt-label { color: rgba(31,26,21,.7); }
+  .logo-tile svg { width: 70px; height: 70px; }
+  .logo-tile.sm svg { width: 32px; height: 32px; }
+
+  .lockup { display: inline-flex; align-items: center; gap: 10px; }
+  .lockup svg { width: 40px; height: 40px; }
+  .lockup .lw {
+    font-family: 'Montserrat', sans-serif; font-weight: 900;
+    font-size: 24px; letter-spacing: -0.02em;
+  }
+  .lockup .lw span { opacity: .6; font-weight: 700; }
+
+  .dodont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .dd {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 16px; overflow: hidden;
+  }
+  .dd-head {
+    padding: 10px 14px; font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dd.do .dd-head { background: var(--sage-bg); color: var(--sage-ink); }
+  .dd.dont .dd-head { background: var(--rose-bg); color: var(--rose-ink); }
+  .dd-body { padding: 22px; min-height: 130px; display: flex; align-items: center; justify-content: center; background: var(--cream-2); }
+  .dd-note { padding: 12px 14px; font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--rule); }
+
+  /* ========== COLOR ========== */
+  .token-table {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 16px; overflow: hidden;
+  }
+  .token-row {
+    display: grid; grid-template-columns: 64px 1.3fr 1.3fr 1fr 1.3fr;
+    gap: 16px; align-items: center;
+    padding: 14px 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .token-row:first-child { border-top: 0; }
+  .token-row.head {
+    background: var(--cream-2);
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 10px 18px;
+  }
+  .sw { width: 44px; height: 44px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.06); }
+  .t-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; letter-spacing: -0.005em; }
+  .t-name small { display: block; font-family: 'JetBrains Mono', monospace; color: var(--ink-3); font-weight: 500; font-size: 11px; margin-top: 2px; letter-spacing: 0; }
+  .t-codes { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-2); line-height: 1.6; }
+  .t-codes span { display: block; }
+  .t-codes b { color: var(--ink); font-weight: 600; }
+  .t-use { font-size: 13px; color: var(--ink-3); line-height: 1.5; }
+  .t-use b { color: var(--ink-2); font-weight: 600; }
+  .t-var {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--orange-deep);
+    padding: 3px 7px; border-radius: 6px; background: var(--apricot-soft);
+    display: inline-block;
+  }
+  .copy { cursor: copy; }
+  .copy:hover { filter: brightness(1.05); }
+
+  /* status system */
+  .status-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .status-tile {
+    border-radius: 18px; padding: 22px;
+    border: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .st-sage { background: var(--sage-bg); }
+  .st-sky { background: var(--sky-bg); }
+  .st-amber { background: var(--amber-bg); }
+  .st-rose { background: var(--rose-bg); }
+  .st-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    display: grid; place-items: center;
+  }
+  .st-icon svg { width: 22px; height: 22px; }
+  .st-sage .st-icon svg, .st-sage .st-label, .st-sage .st-example b { color: var(--sage-ink); }
+  .st-sky .st-icon svg, .st-sky .st-label, .st-sky .st-example b { color: var(--sky-ink); }
+  .st-amber .st-icon svg, .st-amber .st-label, .st-amber .st-example b { color: var(--amber-ink); }
+  .st-rose .st-icon svg, .st-rose .st-label, .st-rose .st-example b { color: var(--rose-ink); }
+  .st-label { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 20px; letter-spacing: -0.02em; }
+  .st-def { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .st-vars {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-2); background: rgba(255,255,255,.4);
+    border-radius: 8px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .st-example { font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed rgba(0,0,0,.1); padding-top: 10px; line-height: 1.5; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 8px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .sb-sage { background: var(--sage-bg); color: var(--sage-ink); }
+  .sb-sky { background: var(--sky-bg); color: var(--sky-ink); }
+  .sb-amber { background: var(--amber-bg); color: var(--amber-ink); }
+  .sb-rose { background: var(--rose-bg); color: var(--rose-ink); }
+  .sb-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* type */
+  .type-stack { display: flex; flex-direction: column; gap: 4px; background: var(--paper); border: 1px solid var(--rule); border-radius: 18px; padding: 26px; }
+  .type-row { display: grid; grid-template-columns: 70px 1fr auto; gap: 16px; align-items: baseline; padding: 14px 0; border-top: 1px dashed var(--rule); }
+  .type-row:first-child { border-top: 0; }
+  .type-row .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-3); letter-spacing: 0.04em; }
+  .type-row .meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+
+  .font-sample {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 18px;
+    padding: 28px;
+  }
+  .font-sample h3 { margin: 0 0 6px; }
+  .font-sample .glyphs {
+    font-size: 48px; line-height: 1.15;
+    color: var(--ink-2);
+    margin: 14px 0;
+    letter-spacing: -0.01em;
+  }
+  .font-sample .weights { display: flex; flex-wrap: wrap; gap: 18px; font-size: 16px; color: var(--ink-2); }
+  .font-sample .weights span { display: flex; flex-direction: column; gap: 2px; }
+  .font-sample .weights small { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-3); }
+
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* spacing, radius, shadow */
+  .spacing-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px dashed var(--rule); }
+  .spacing-row:first-child { border-top: 0; }
+  .spacing-bar { height: 22px; background: var(--apricot-soft); border-radius: 4px; }
+  .spacing-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-2); min-width: 160px; }
+  .spacing-meta b { color: var(--ink); }
+
+  .radius-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .radius-tile {
+    aspect-ratio: 1/1; background: var(--apricot-soft); border: 1px solid var(--apricot);
+    display: grid; place-items: end; padding: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--orange-deep);
+  }
+
+  .shadow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .shadow-tile {
+    background: var(--paper); aspect-ratio: 4/3;
+    border-radius: 16px; padding: 20px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .shadow-tile.card { box-shadow: var(--shadow-card); }
+  .shadow-tile.lift { box-shadow: var(--shadow-lift); }
+  .shadow-tile.flat { border: 1px solid var(--rule); }
+  .shadow-tile .name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; }
+  .shadow-tile code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+
+  /* icons */
+  .icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+  .icon-tile {
+    aspect-ratio: 1/1;
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    cursor: copy;
+    transition: all .15s ease;
+  }
+  .icon-tile:hover { border-color: var(--orange); transform: translateY(-1px); }
+  .icon-tile svg { width: 20px; height: 20px; color: var(--ink-2); }
+
+  /* buttons */
+  .btn {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    border: 0; cursor: pointer;
+    padding: 11px 18px; border-radius: 999px;
+    font-size: 13px;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-primary:hover { background: var(--orange-deep); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--cream); }
+  .btn-gold { background: var(--gold); color: var(--ink); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
+  .btn-lg { padding: 14px 22px; font-size: 14px; }
+  .btn-disabled { background: var(--cream-2); color: var(--ink-4); cursor: not-allowed; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .demo {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 18px;
+    padding: 26px;
+  }
+  .demo + .demo { margin-top: 14px; }
+  .demo-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 14px; margin-bottom: 18px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .demo-head h4 { margin: 0; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); font-weight: 800; }
+  .demo-head code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px; border-radius: 999px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--cream-2); color: var(--ink-2);
+  }
+  .pill.orange { background: var(--apricot-soft); color: var(--orange-deep); }
+  .pill.blue { background: var(--ice-soft); color: var(--sky-ink); }
+  .pill.gold { background: #F7EBC4; color: var(--amber-ink); }
+
+  /* forms */
+  .input-demo {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .input-demo .label-row { flex: 1; }
+  .input-demo .lbl { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .input-demo input { border: 0; background: transparent; outline: 0; width: 100%; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+  .input-demo input::placeholder { color: var(--ink-4); font-weight: 500; }
+  .input-demo .ico {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--apricot-soft); color: var(--orange-deep);
+    display: grid; place-items: center; flex: 0 0 36px;
+  }
+
+  /* compound search */
+  .search-card {
+    background: var(--paper); border-radius: 20px;
+    padding: 10px; display: flex; gap: 8px;
+    box-shadow: var(--shadow-lift);
+    border: 1px solid var(--rule);
+    align-items: stretch;
+  }
+  .search-field {
+    flex: 1; display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 14px;
+  }
+  .search-field + .search-field { border-left: 1px solid var(--rule); }
+  .sf-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center; flex: 0 0 36px;
+    background: var(--apricot-soft); color: var(--orange-deep);
+  }
+  .sf-icon.blue { background: var(--ice-soft); color: var(--blue); }
+  .sf-body { flex: 1; min-width: 0; }
+  .sf-label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .sf-input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 15px; font-family: 'Montserrat', sans-serif; font-weight: 600; color: var(--ink); padding: 2px 0 0; }
+  .sf-input::placeholder { color: var(--ink-4); font-weight: 500; }
+  .search-go {
+    background: var(--orange); color: #fff; border: 0; cursor: pointer;
+    border-radius: 14px; padding: 0 22px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* result verdict */
+  .verdict {
+    padding: 18px 22px; border-radius: 16px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .verdict.v-rose { background: var(--rose-bg); }
+  .verdict.v-sage { background: var(--sage-bg); }
+  .verdict.v-amber { background: var(--amber-bg); }
+  .verdict.v-sky { background: var(--sky-bg); }
+  .verdict-ico {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,.6); display: grid; place-items: center; flex: 0 0 44px;
+  }
+  .verdict-ico svg { width: 22px; height: 22px; }
+  .v-rose .verdict-ico svg, .v-rose .v-label { color: var(--rose-ink); }
+  .v-sage .verdict-ico svg, .v-sage .v-label { color: var(--sage-ink); }
+  .v-amber .verdict-ico svg, .v-amber .v-label { color: var(--amber-ink); }
+  .v-sky .verdict-ico svg, .v-sky .v-label { color: var(--sky-ink); }
+  .v-label { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
+  .v-sub { font-size: 13.5px; color: var(--ink-2); }
+
+  /* card gallery */
+  .card-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .floater {
+    background: var(--paper); border-radius: 16px;
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+  }
+  .floater.dark { background: var(--ink); color: #EFE6D8; border: 0; }
+  .floater.dark .f-meta { color: #8A7E6D; }
+  .floater .f-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; line-height: 1.2; margin-top: 8px; }
+  .floater .f-meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  .floater .f-route { font-family: 'Montserrat', sans-serif; font-weight: 800; display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 6px 0; }
+
+  /* loading */
+  .loader-demo {
+    background: var(--ink); color: #fff;
+    border-radius: 18px; padding: 40px;
+    display: flex; gap: 20px; align-items: center;
+  }
+  .loader-spin { width: 56px; height: 56px; border-radius: 50%; border: 3px solid rgba(255,255,255,.12); border-top-color: var(--orange); animation: spin 0.9s linear infinite; flex: 0 0 56px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-t { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.01em; }
+  .loader-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #B4A897; margin-top: 2px; }
+
+  /* a11y */
+  .a11y-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .a11y-card {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 18px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .a11y-card .ico { width: 36px; height: 36px; border-radius: 10px; background: var(--ice-soft); color: var(--sky-ink); display: grid; place-items: center; flex: 0 0 36px; }
+  .a11y-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: 800; }
+  .a11y-card p { margin: 0; color: var(--ink-3); font-size: 13px; line-height: 1.55; }
+
+  /* Tweaks bar */
+  .tweaks {
+    position: fixed; top: 16px; right: 16px;
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: var(--shadow-card);
+    z-index: 100;
+    display: flex; gap: 6px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px;
+  }
+  .tweaks .seg { display: flex; background: var(--cream-2); border-radius: 10px; padding: 2px; gap: 2px; }
+  .tweaks .seg button {
+    border: 0; background: transparent; padding: 6px 10px; border-radius: 8px; cursor: pointer;
+    color: var(--ink-3); font-family: inherit; font-weight: 700; font-size: 11px;
+  }
+  .tweaks .seg button.on { background: var(--ink); color: var(--cream); }
+
+  .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .voice-card {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 16px;
+    padding: 22px;
+  }
+  .voice-card h4 { margin: 0 0 10px; font-size: 16px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
+  .voice-card.say h4 { color: var(--sage-ink); }
+  .voice-card.dont h4 { color: var(--rose-ink); }
+  .voice-card blockquote {
+    margin: 8px 0; padding: 12px 16px;
+    border-left: 3px solid var(--rule);
+    font-family: 'Montserrat', sans-serif; font-weight: 600;
+    font-size: 15px; color: var(--ink);
+    background: var(--cream-2); border-radius: 8px;
+  }
+  .voice-card.say blockquote { border-left-color: var(--sage-fg); }
+  .voice-card.dont blockquote { border-left-color: var(--rose-fg); text-decoration: line-through; text-decoration-color: var(--rose-fg); color: var(--ink-3); }
+  .voice-card p { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
+
+  /* Misc */
+  .callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    background: var(--ice-soft);
+    border: 1px solid var(--ice);
+    border-radius: 14px;
+    font-size: 14px; color: var(--sky-ink);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .callout svg { color: var(--sky-fg); flex: 0 0 20px; }
+  .callout b { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+
+  @media (max-width: 960px) {
+    .ds-layout { grid-template-columns: 1fr; }
+    aside.ds-nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); }
+    main.ds-main { padding: 40px 24px 80px; }
+    .ds-hero, .card-gallery, .status-grid, .type-grid, .a11y-grid, .voice-grid, .dodont, .shadow-grid { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); }
+    .radius-grid { grid-template-columns: repeat(3, 1fr); }
+    .icon-grid { grid-template-columns: repeat(6, 1fr); }
+    .token-row { grid-template-columns: 44px 1fr; grid-auto-flow: row; }
+    .token-row .t-codes, .token-row .t-var, .token-row .t-use { grid-column: 2; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="coLogoG" x1="15%" y1="85%" x2="85%" y2="15%">
+      <stop offset="0%" stop-color="#C45327"/>
+      <stop offset="30%" stop-color="#DE6438"/>
+      <stop offset="50%" stop-color="#E8A972"/>
+      <stop offset="70%" stop-color="#BDD9F0"/>
+      <stop offset="100%" stop-color="#5B9BC5"/>
+    </linearGradient>
+    <symbol id="coLogo" viewBox="0 0 100 100">
+      <g transform="rotate(-35 50 50)">
+        <rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="url(#coLogoG)" stroke-width="10"/>
+      </g>
+    </symbol>
+    <symbol id="coLogoMono" viewBox="0 0 100 100">
+      <g transform="rotate(-35 50 50)">
+        <rect x="10" y="32" width="80" height="36" rx="18" fill="none" stroke="currentColor" stroke-width="10"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Tweak bar -->
+<div class="tweaks">
+  <div class="seg" id="tkTheme">
+    <button class="on" data-theme="light">Light</button>
+    <button data-theme="dark">Dark</button>
+  </div>
+  <div class="seg" id="tkScale">
+    <button data-scale="0.9">A-</button>
+    <button class="on" data-scale="1">A</button>
+    <button data-scale="1.12">A+</button>
+  </div>
+  <div class="seg" id="tkDensity">
+    <button data-density="0.75">Compact</button>
+    <button class="on" data-density="1">Cozy</button>
+    <button data-density="1.3">Roomy</button>
+  </div>
+</div>
+
+<div class="ds-layout">
+
+  <!-- ============ NAV ============ -->
+  <aside class="ds-nav">
+    <div class="ds-brand">
+      <svg><use href="#coLogo"/></svg>
+      <div>
+        CheckOrbit
+        <span class="sub">Design System · v1.0</span>
+      </div>
+    </div>
+
+    <h5>Foundations</h5>
+    <a href="#brand">Brand & logo</a>
+    <a href="#voice">Voice</a>
+    <a href="#color">Color</a>
+    <a href="#status">Status system</a>
+    <a href="#type">Typography</a>
+    <a href="#spacing">Spacing & layout</a>
+    <a href="#radius">Radius</a>
+    <a href="#shadow">Elevation</a>
+    <a href="#icons">Iconography</a>
+
+    <h5>Components</h5>
+    <a href="#buttons">Buttons</a>
+    <a href="#badges">Badges & pills</a>
+    <a href="#forms">Forms & search</a>
+    <a href="#cards">Cards</a>
+    <a href="#verdict">Verdicts</a>
+
+    <h5>Patterns</h5>
+    <a href="#patterns">Page layouts</a>
+    <a href="#motion">Motion & loading</a>
+    <a href="#a11y">Accessibility</a>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="ds-main">
+
+    <!-- Hero -->
+    <section class="ds-hero">
+      <div>
+        <div class="sec-eyebrow">CheckOrbit · Design system</div>
+        <h1>The system behind <em>fast, trustworthy</em> compliance answers.</h1>
+        <p>CheckOrbit's design is a travel guidebook crossed with modern SaaS: warm cream, burnt-orange confidence, steel-blue authority, and a strictly separated four-lane status system for compliance verdicts. This is the canonical reference.</p>
+        <div class="badges">
+          <span class="badge">v1.0 · Apr 2026</span>
+          <span class="badge">WCAG 2.1 AA</span>
+          <span class="badge">32 tokens · 18 components</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 200 200">
+          <use href="#coLogo" width="200" height="200"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============ BRAND ============ -->
+    <section class="sec" id="brand">
+      <header class="sec-header">
+        <div class="sec-eyebrow">01 · Brand</div>
+        <h2>The logo is a pill in orbit.</h2>
+        <p>A tilted stadium form that reads simultaneously as a <b>medication capsule</b> and as an <b>orbital ring</b> — the gradient transitions from burnt-orange origin to steel-blue destination, encoding the product's core motion: traveler arrives anxious (warm), leaves informed (cool).</p>
+      </header>
+
+      <div class="logo-grid">
+        <div class="logo-tile"><svg><use href="#coLogo"/></svg><div class="lt-label">Primary · gradient</div></div>
+        <div class="logo-tile dark" style="color: #F7F1EA"><svg><use href="#coLogoMono"/></svg><div class="lt-label">Mono · light on dark</div></div>
+        <div class="logo-tile" style="color: var(--ink)"><svg><use href="#coLogoMono"/></svg><div class="lt-label">Mono · dark on light</div></div>
+        <div class="logo-tile orange" style="color: #fff"><svg><use href="#coLogoMono"/></svg><div class="lt-label">On brand orange</div></div>
+        <div class="logo-tile apricot" style="color: var(--ink)"><svg><use href="#coLogoMono"/></svg><div class="lt-label">On apricot</div></div>
+        <div class="logo-tile sm">
+          <span class="lockup">
+            <svg><use href="#coLogo"/></svg>
+            <span class="lw">Check<span>Orbit</span></span>
+          </span>
+          <div class="lt-label">Horizontal lockup</div>
+        </div>
+      </div>
+
+      <h3 class="sub">Logo usage</h3>
+      <div class="dodont">
+        <div class="dd do">
+          <div class="dd-head">✓ Do · Minimum clearspace = half the mark's height</div>
+          <div class="dd-body">
+            <span class="lockup" style="position:relative;padding:24px;outline:1px dashed var(--apricot);border-radius:8px">
+              <svg style="width:40px;height:40px"><use href="#coLogo"/></svg>
+              <span class="lw">Check<span>Orbit</span></span>
+            </span>
+          </div>
+          <div class="dd-note">Protect the mark with clearspace equal to 50% of its height on all sides.</div>
+        </div>
+        <div class="dd dont">
+          <div class="dd-head">✗ Don't · Rotate, recolor, or redraw the orbit</div>
+          <div class="dd-body" style="gap:12px">
+            <svg style="width:36px;height:36px;transform:rotate(80deg)"><use href="#coLogo"/></svg>
+            <svg style="width:36px;height:36px;color:#2F6B3F"><use href="#coLogoMono"/></svg>
+            <svg style="width:36px;height:36px;filter:saturate(3) hue-rotate(180deg)"><use href="#coLogo"/></svg>
+          </div>
+          <div class="dd-note">The gradient direction, hue stops, and ring stroke weight are fixed. Never recolor outside the approved palette.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VOICE ============ -->
+    <section class="sec" id="voice">
+      <header class="sec-header">
+        <div class="sec-eyebrow">02 · Voice & copy</div>
+        <h2>Clarity is the empathetic choice.</h2>
+        <p>CheckOrbit handles high-stakes medical compliance. Travelers arrive at 2 AM, 72 hours before departure, looking for a real answer. Soft language is not kind — it is dangerous. Lead with the verdict. Name the consequence. Hand them the next step.</p>
+      </header>
+
+      <div class="voice-grid">
+        <div class="voice-card say">
+          <h4>
+            <svg width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            Say this
+          </h4>
+          <blockquote>Banned. Do not carry.</blockquote>
+          <blockquote>Amphetamine is prohibited under Japan's Stimulants Control Act. No tourist permit exists.</blockquote>
+          <blockquote>Switch to a non-stimulant alternative before Apr 25.</blockquote>
+          <p>Verdict first. Legal basis second. Actionable deadline third.</p>
+        </div>
+        <div class="voice-card dont">
+          <h4>
+            <svg width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg>
+            Never this
+          </h4>
+          <blockquote>This medication may potentially have some restrictions…</blockquote>
+          <blockquote>Unfortunately, we regret to inform you that…</blockquote>
+          <blockquote>Please consult a professional for more information.</blockquote>
+          <p>Hedging, apology, and disclaimers erode trust. If we can't answer, we say so clearly and tell them who can.</p>
+        </div>
+      </div>
+
+      <h4 class="sub-2">Voice principles</h4>
+      <div class="a11y-grid">
+        <div class="a11y-card"><div class="ico">01</div><div><h4>Verdict first</h4><p>Every result leads with one of: Legal · Rx-only · Restricted · Banned. No preamble.</p></div></div>
+        <div class="a11y-card"><div class="ico">02</div><div><h4>Bad news is a feature</h4><p>"Banned" is stated plainly, never softened. Immediately followed by what to do instead.</p></div></div>
+        <div class="a11y-card"><div class="ico">03</div><div><h4>Show the work</h4><p>Every claim names the source agency and verification date, inline, not in a footer.</p></div></div>
+        <div class="a11y-card"><div class="ico">04</div><div><h4>Speed is trust</h4><p>UI copy acknowledges time: "Answered in 1.8s", "Verified Apr 11", "Act by May 06".</p></div></div>
+      </div>
+    </section>
+
+    <!-- ============ COLOR ============ -->
+    <section class="sec" id="color">
+      <header class="sec-header">
+        <div class="sec-eyebrow">03 · Color</div>
+        <h2>Brand lane and status lane live in strict separation.</h2>
+        <p>Orange, blue, and gold are brand identity — they appear in navigation, CTAs, trust elements, and highlights. The four status colors (sage, sky, amber, rose) appear <b>only</b> in compliance results. Never decorative. Never cross-contaminated.</p>
+      </header>
+
+      <h4 class="sub-2">Brand palette</h4>
+      <div class="token-table">
+        <div class="token-row head"><div></div><div>Token</div><div>Values</div><div>CSS var</div><div>Usage</div></div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#DE6438" data-copy="#DE6438"></div>
+          <div class="t-name">Burnt Orange <small>Primary</small></div>
+          <div class="t-codes"><span><b>HEX</b> #DE6438</span><span><b>RGB</b> 222 100 56</span><span><b>OKLCH</b> 0.64 0.17 43</span></div>
+          <div><span class="t-var">--orange</span><br/><span class="t-var" style="background:var(--cream-2);color:var(--ink-3);margin-top:4px">bg-orange-500</span></div>
+          <div class="t-use"><b>Primary CTAs, nav accents, links, brand identity.</b> Never used for compliance status.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#C45327" data-copy="#C45327"></div>
+          <div class="t-name">Burnt Orange Deep <small>Pressed / hover</small></div>
+          <div class="t-codes"><span><b>HEX</b> #C45327</span><span><b>RGB</b> 196 83 39</span><span><b>OKLCH</b> 0.57 0.16 42</span></div>
+          <div><span class="t-var">--orange-deep</span></div>
+          <div class="t-use">Button hover and active state only.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#E8A972" data-copy="#E8A972"></div>
+          <div class="t-name">Soft Apricot <small>Primary Light</small></div>
+          <div class="t-codes"><span><b>HEX</b> #E8A972</span><span><b>RGB</b> 232 169 114</span><span><b>OKLCH</b> 0.79 0.10 60</span></div>
+          <div><span class="t-var">--apricot</span></div>
+          <div class="t-use">Warm hover fills, hero accents, illustration washes.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#F6DEC2" data-copy="#F6DEC2"></div>
+          <div class="t-name">Apricot Tint <small>Tint-40</small></div>
+          <div class="t-codes"><span><b>HEX</b> #F6DEC2</span><span><b>RGB</b> 246 222 194</span><span><b>OKLCH</b> 0.91 0.05 72</span></div>
+          <div><span class="t-var">--apricot-soft</span></div>
+          <div class="t-use">Input icon tiles, CTA hover tints, warm card backgrounds.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#5B9BC5" data-copy="#5B9BC5"></div>
+          <div class="t-name">Steel Blue <small>Secondary</small></div>
+          <div class="t-codes"><span><b>HEX</b> #5B9BC5</span><span><b>RGB</b> 91 155 197</span><span><b>OKLCH</b> 0.68 0.09 235</span></div>
+          <div><span class="t-var">--blue</span></div>
+          <div class="t-use"><b>Trust elements, source citations, secondary actions.</b> Resolution flows.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#BDD9F0" data-copy="#BDD9F0"></div>
+          <div class="t-name">Ice Blue <small>Secondary Light</small></div>
+          <div class="t-codes"><span><b>HEX</b> #BDD9F0</span><span><b>RGB</b> 189 217 240</span><span><b>OKLCH</b> 0.87 0.04 235</span></div>
+          <div><span class="t-var">--ice</span></div>
+          <div class="t-use">Information panels, related-check surfaces, trip banners.</div>
+        </div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#DDB943" data-copy="#DDB943"></div>
+          <div class="t-name">Marigold Gold <small>Accent</small></div>
+          <div class="t-codes"><span><b>HEX</b> #DDB943</span><span><b>RGB</b> 221 185 67</span><span><b>OKLCH</b> 0.80 0.14 88</span></div>
+          <div><span class="t-var">--gold</span></div>
+          <div class="t-use">Premium tier CTAs, "Verified" badges, API-key highlight. Used sparingly.</div>
+        </div>
+      </div>
+
+      <h4 class="sub-2">Neutrals (warm)</h4>
+      <div class="token-table">
+        <div class="token-row head"><div></div><div>Token</div><div>Values</div><div>CSS var</div><div>Usage</div></div>
+
+        <div class="token-row">
+          <div class="sw copy" style="background:#F5EEE4" data-copy="#F5EEE4"></div>
+          <div class="t-name">Cream <small>Surface-0</small></div>
+          <div class="t-codes"><span><b>HEX</b> #F5EEE4</span><span><b>OKLCH</b> 0.94 0.015 75</span></div>
+          <div><span class="t-var">--cream</span></div>
+          <div class="t-use">Page background. Sets the guidebook tone.</div>
+        </div>
+        <div class="token-row">
+          <div class="sw copy" style="background:#EFE6D8" data-copy="#EFE6D8"></div>
+          <div class="t-name">Cream-2 <small>Surface-1</small></div>
+          <div class="t-codes"><span><b>HEX</b> #EFE6D8</span><span><b>OKLCH</b> 0.91 0.02 75</span></div>
+          <div><span class="t-var">--cream-2</span></div>
+          <div class="t-use">Inset surfaces, subtle banded sections.</div>
+        </div>
+        <div class="token-row">
+          <div class="sw copy" style="background:#FFFFFF" data-copy="#FFFFFF"></div>
+          <div class="t-name">Paper <small>Card surface</small></div>
+          <div class="t-codes"><span><b>HEX</b> #FFFFFF</span></div>
+          <div><span class="t-var">--paper</span></div>
+          <div class="t-use">Cards, panels, inputs. Sits above cream.</div>
+        </div>
+        <div class="token-row">
+          <div class="sw copy" style="background:#1F1A15" data-copy="#1F1A15"></div>
+          <div class="t-name">Ink <small>Text-primary / dark surface</small></div>
+          <div class="t-codes"><span><b>HEX</b> #1F1A15</span><span><b>OKLCH</b> 0.23 0.01 60</span></div>
+          <div><span class="t-var">--ink</span></div>
+          <div class="t-use">Headlines, body, dark-mode surfaces, source cards.</div>
+        </div>
+        <div class="token-row">
+          <div class="sw copy" style="background:#6E6357" data-copy="#6E6357"></div>
+          <div class="t-name">Ink-3 <small>Text-muted</small></div>
+          <div class="t-codes"><span><b>HEX</b> #6E6357</span></div>
+          <div><span class="t-var">--ink-3</span></div>
+          <div class="t-use">Subtitles, meta, secondary labels. AA on cream.</div>
+        </div>
+        <div class="token-row">
+          <div class="sw copy" style="background:#E6DCCC" data-copy="#E6DCCC"></div>
+          <div class="t-name">Rule <small>Border</small></div>
+          <div class="t-codes"><span><b>HEX</b> #E6DCCC</span></div>
+          <div><span class="t-var">--rule</span></div>
+          <div class="t-use">Card borders, dividers, input outlines.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STATUS ============ -->
+    <section class="sec" id="status">
+      <header class="sec-header">
+        <div class="sec-eyebrow">04 · Status system</div>
+        <h2>Four lanes. Never decorative.</h2>
+        <p>Every compliance verdict lands in exactly one of four visual lanes. Each uses triple encoding — color + icon + text — so the status is legible for a user with low vision, on a grayscale screen, or at a glance across a 24-item list. If you reach for one of these colors and it's not a compliance result, use a brand color instead.</p>
+      </header>
+
+      <div class="status-grid">
+        <div class="status-tile st-sage">
+          <div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="st-label">Legal</div>
+          <div class="st-def">Permitted in personal quantities. No prescription or permit required.</div>
+          <div class="st-vars">
+            <span>bg: emerald-50 #ECF3EC</span>
+            <span>fg: emerald-700 #2F6B3F</span>
+          </div>
+          <div class="st-example"><b>E.g.</b> Ibuprofen 200mg in Germany</div>
+        </div>
+
+        <div class="status-tile st-sky">
+          <div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="6" width="16" height="13" rx="2"/><path d="M8 6V3M16 6V3M4 10h16"/></svg></div>
+          <div class="st-label">Prescription-Only</div>
+          <div class="st-def">Legal with a valid prescription. Carry in original pharmacy packaging.</div>
+          <div class="st-vars">
+            <span>bg: sky-50 #E4EEF6</span>
+            <span>fg: sky-700 #2D6A92</span>
+          </div>
+          <div class="st-example"><b>E.g.</b> Sertraline 50mg in Japan</div>
+        </div>
+
+        <div class="status-tile st-amber">
+          <div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.01"/></svg></div>
+          <div class="st-label">Restricted</div>
+          <div class="st-def">Permit, certificate, or quantity cap required. Has a deadline.</div>
+          <div class="st-vars">
+            <span>bg: amber-50 #F7ECD4</span>
+            <span>fg: amber-700 #8A5E14</span>
+          </div>
+          <div class="st-example"><b>E.g.</b> Codeine 30mg in UAE</div>
+        </div>
+
+        <div class="status-tile st-rose">
+          <div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg></div>
+          <div class="st-label">Banned</div>
+          <div class="st-def">Prohibited. No permit path. Must switch or leave behind.</div>
+          <div class="st-vars">
+            <span>bg: rose-50 #F5DFD8</span>
+            <span>fg: rose-700 #9C3D2A</span>
+          </div>
+          <div class="st-example"><b>E.g.</b> Adderall in Japan</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <svg width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16v.01"/></svg>
+        <div><b>Terracotta, not red.</b> "Banned" uses a muted rose/terracotta — firm but not panic-inducing. Pure red triggers fight-or-flight in users who are already anxious; it reduces comprehension of the next-steps panel immediately below the verdict.</div>
+      </div>
+
+      <h3 class="sub">Do / Don't</h3>
+      <div class="dodont">
+        <div class="dd do">
+          <div class="dd-head">✓ Do · Use the status lane only for compliance verdicts</div>
+          <div class="dd-body">
+            <div style="display:flex;gap:8px;flex-direction:column">
+              <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+              <span class="status-badge sb-amber"><span class="sb-dot"></span> Restricted</span>
+              <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+            </div>
+          </div>
+          <div class="dd-note">Status colors carry one meaning per lane. Triple-encoded: color + dot + text label.</div>
+        </div>
+        <div class="dd dont">
+          <div class="dd-head">✗ Don't · Use status colors for decoration or secondary messaging</div>
+          <div class="dd-body">
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn btn-sm" style="background:var(--rose-bg);color:var(--rose-ink)">Cancel trip</button>
+              <span class="pill" style="background:var(--amber-bg);color:var(--amber-ink)">NEW</span>
+            </div>
+          </div>
+          <div class="dd-note">A rose "Cancel" button or amber "NEW" pill dilutes the status system. Use ink/ghost buttons and brand-colored pills instead.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TYPE ============ -->
+    <section class="sec" id="type">
+      <header class="sec-header">
+        <div class="sec-eyebrow">05 · Typography</div>
+        <h2>Montserrat structures. Open Sans substantiates.</h2>
+        <p>Two-family pairing with a strict rule: <b>Montserrat handles anything scanned</b> — headlines, nav, buttons, badges, quantity data. <b>Open Sans handles anything read</b> — body copy, compliance details, source citations, permit instructions. JetBrains Mono is reserved for sources, IDs, and timestamps.</p>
+      </header>
+
+      <div class="type-grid">
+        <div class="font-sample" style="font-family:'Montserrat',sans-serif">
+          <h3 style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);font-weight:800">Structure · Montserrat</h3>
+          <div class="glyphs" style="font-weight:900;letter-spacing:-0.03em">Aa &amp; 0 42</div>
+          <div class="weights">
+            <span>Regular<small>500</small></span>
+            <span style="font-weight:600">SemiBold<small>600</small></span>
+            <span style="font-weight:700">Bold<small>700</small></span>
+            <span style="font-weight:800">ExtraBold<small>800</small></span>
+            <span style="font-weight:900">Black<small>900</small></span>
+          </div>
+        </div>
+        <div class="font-sample" style="font-family:'Open Sans',sans-serif">
+          <h3 style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);font-weight:800">Substance · Open Sans</h3>
+          <div class="glyphs" style="font-weight:600;letter-spacing:-0.005em">Aa &amp; 0 42</div>
+          <div class="weights">
+            <span>Regular<small>400</small></span>
+            <span style="font-weight:500">Medium<small>500</small></span>
+            <span style="font-weight:600">SemiBold<small>600</small></span>
+            <span style="font-weight:700">Bold<small>700</small></span>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="sub-2">Scale</h4>
+      <div class="type-stack">
+        <div class="type-row"><span class="label">display</span><span style="font-family:'Montserrat';font-weight:900;font-size:64px;letter-spacing:-0.035em;line-height:0.98">Your meds. Their rules.</span><span class="meta">64 / 63 · -0.035em · 900</span></div>
+        <div class="type-row"><span class="label">h1</span><span style="font-family:'Montserrat';font-weight:900;font-size:44px;letter-spacing:-0.03em;line-height:1">Adderall / Japan</span><span class="meta">44 / 44 · -0.03em · 900</span></div>
+        <div class="type-row"><span class="label">h2</span><span style="font-family:'Montserrat';font-weight:900;font-size:34px;letter-spacing:-0.03em;line-height:1.02">Layover trap</span><span class="meta">34 / 35 · -0.03em · 900</span></div>
+        <div class="type-row"><span class="label">h3</span><span style="font-family:'Montserrat';font-weight:800;font-size:22px;letter-spacing:-0.02em">Compound breakdown</span><span class="meta">22 / 28 · -0.02em · 800</span></div>
+        <div class="type-row"><span class="label">h4</span><span style="font-family:'Montserrat';font-weight:800;font-size:17px;letter-spacing:-0.01em">Government sources</span><span class="meta">17 / 24 · -0.01em · 800</span></div>
+        <div class="type-row"><span class="label">eyebrow</span><span style="font-family:'Montserrat';font-weight:700;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--orange)">VERIFIED ANSWER</span><span class="meta">11 / 16 · 0.12em · 700</span></div>
+        <div class="type-row"><span class="label">body</span><span style="font-family:'Open Sans';font-weight:400;font-size:15px;line-height:1.6">Amphetamine-based stimulants are prohibited under Japan's Stimulants Control Act.</span><span class="meta">15 / 24 · 1.6 · 400</span></div>
+        <div class="type-row"><span class="label">meta</span><span style="font-family:'Open Sans';font-weight:400;font-size:13px;color:var(--ink-3)">Verified Apr 11, 2026</span><span class="meta">13 / 20 · 400</span></div>
+        <div class="type-row"><span class="label">mono</span><span style="font-family:'JetBrains Mono';font-size:12px;color:var(--ink-3)">MHLW 1951.14</span><span class="meta">12 / 18 · 500</span></div>
+      </div>
+    </section>
+
+    <!-- ============ SPACING / RADIUS / SHADOW ============ -->
+    <section class="sec" id="spacing">
+      <header class="sec-header">
+        <div class="sec-eyebrow">06 · Spacing & layout</div>
+        <h2>4-point grid, with a bias toward generous.</h2>
+        <p>All spacing is a multiple of 4px. Dense tabular data uses 4–12; content layout uses 16–32; section rhythm uses 56–96.</p>
+      </header>
+
+      <div class="panel">
+        <div class="spacing-row"><div class="spacing-meta"><b>space-1</b> 4px</div><div class="spacing-bar" style="width:4px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-2</b> 8px</div><div class="spacing-bar" style="width:8px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-3</b> 12px</div><div class="spacing-bar" style="width:12px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-4</b> 16px</div><div class="spacing-bar" style="width:16px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-5</b> 24px</div><div class="spacing-bar" style="width:24px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-6</b> 32px</div><div class="spacing-bar" style="width:32px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-7</b> 48px</div><div class="spacing-bar" style="width:48px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-8</b> 64px</div><div class="spacing-bar" style="width:64px"></div></div>
+        <div class="spacing-row"><div class="spacing-meta"><b>space-9</b> 96px</div><div class="spacing-bar" style="width:96px"></div></div>
+      </div>
+
+      <h3 class="sub" id="radius">Radius</h3>
+      <div class="radius-grid">
+        <div class="radius-tile" style="border-radius:6px">6</div>
+        <div class="radius-tile" style="border-radius:10px">10</div>
+        <div class="radius-tile" style="border-radius:14px">14</div>
+        <div class="radius-tile" style="border-radius:18px">18</div>
+        <div class="radius-tile" style="border-radius:999px">Pill</div>
+      </div>
+      <p style="color:var(--ink-3);font-size:13px;margin-top:10px"><b>Rule of thumb:</b> Inputs 14 · Cards 18 · Pills, CTAs and badges 999 · Hero art 24.</p>
+
+      <h3 class="sub" id="shadow">Elevation</h3>
+      <div class="shadow-grid">
+        <div class="shadow-tile flat">
+          <div class="name">Flat</div>
+          <code>border: 1px solid --rule</code>
+        </div>
+        <div class="shadow-tile card">
+          <div class="name">Card</div>
+          <code>0 1px 2px .04, 0 8px 24px -12px .12</code>
+        </div>
+        <div class="shadow-tile lift">
+          <div class="name">Lift</div>
+          <code>0 2px 4px .05, 0 20px 40px -16px .18</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ICONS ============ -->
+    <section class="sec" id="icons">
+      <header class="sec-header">
+        <div class="sec-eyebrow">07 · Iconography</div>
+        <h2>2px stroke. Rounded caps. Square bounds.</h2>
+        <p>CheckOrbit uses a consistent 2px-stroke, 24×24 icon grid with rounded line caps and joins. Icons carry the semantics of their neighboring status lane — never invent new shapes for status; use the same four verdict icons.</p>
+      </header>
+
+      <div class="icon-grid" id="iconGrid">
+        <!-- populated below via mini-template -->
+      </div>
+    </section>
+
+    <!-- ============ BUTTONS ============ -->
+    <section class="sec" id="buttons">
+      <header class="sec-header">
+        <div class="sec-eyebrow">08 · Components · Buttons</div>
+        <h2>Four roles. Pill geometry.</h2>
+        <p>All buttons are 999px-radius pills. Role is signaled by fill color, not shape. Primary for the one main action on a screen; Ghost for secondary; Gold for premium upsell; Blue for trust-adjacent "resolve this" flows.</p>
+      </header>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Variants</h4><code>btn · btn-primary · btn-ghost · btn-gold · btn-blue</code></div>
+        <div class="row">
+          <button class="btn btn-primary">Start a check</button>
+          <button class="btn btn-ghost">Sign in</button>
+          <button class="btn btn-gold">Upgrade to Pro</button>
+          <button class="btn btn-blue">Start resolution →</button>
+          <button class="btn btn-disabled">Disabled</button>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Sizes</h4><code>btn-sm · btn · btn-lg</code></div>
+        <div class="row">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Default</button>
+          <button class="btn btn-primary btn-lg">Large</button>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head"><h4>With icons & affordance</h4><code>inline-flex · gap-2</code></div>
+        <div class="row">
+          <button class="btn btn-primary">
+            New search
+            <svg width="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
+          <button class="btn btn-ghost">
+            <svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+            Share
+          </button>
+          <button class="btn btn-blue">
+            Book a permit
+            <svg width="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BADGES & PILLS ============ -->
+    <section class="sec" id="badges">
+      <header class="sec-header">
+        <div class="sec-eyebrow">09 · Components · Badges & pills</div>
+        <h2>Status badges, metadata pills.</h2>
+        <p>Status badges use the four status lanes with a dot + uppercase Montserrat label. Metadata pills use brand tints for categories and never status colors.</p>
+      </header>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Status badges</h4><code>status-badge · sb-[sage|sky|amber|rose]</code></div>
+        <div class="row">
+          <span class="status-badge sb-sage"><span class="sb-dot"></span> Legal</span>
+          <span class="status-badge sb-sky"><span class="sb-dot"></span> Prescription-only</span>
+          <span class="status-badge sb-amber"><span class="sb-dot"></span> Restricted</span>
+          <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Metadata pills</h4><code>pill · orange · blue · gold</code></div>
+        <div class="row">
+          <span class="pill">OTC</span>
+          <span class="pill orange">NEW</span>
+          <span class="pill blue">Rx Schedule II</span>
+          <span class="pill gold">Premium</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FORMS ============ -->
+    <section class="sec" id="forms">
+      <header class="sec-header">
+        <div class="sec-eyebrow">10 · Components · Forms</div>
+        <h2>The search is the product.</h2>
+        <p>All input affordances follow the same anatomy: leading tinted icon tile, uppercase Montserrat label, Montserrat 600 input value. Inputs sit on Paper above a Cream page.</p>
+      </header>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Single input</h4><code>input-demo</code></div>
+        <div class="input-demo">
+          <div class="ico"><svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></svg></div>
+          <div class="label-row">
+            <div class="lbl">Medication</div>
+            <input placeholder="e.g. Adderall 20mg" />
+          </div>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head"><h4>Compound search</h4><code>search-card · 2 fields + go</code></div>
+        <div class="search-card">
+          <div class="search-field">
+            <div class="sf-icon"><svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></svg></div>
+            <div class="sf-body">
+              <div class="sf-label">Medication</div>
+              <input class="sf-input" placeholder="e.g. Adderall 20mg" />
+            </div>
+          </div>
+          <div class="search-field">
+            <div class="sf-icon blue"><svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="sf-body">
+              <div class="sf-label">Destination</div>
+              <input class="sf-input" placeholder="Country or airport code" />
+            </div>
+          </div>
+          <button class="search-go">
+            Check
+            <svg width="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CARDS ============ -->
+    <section class="sec" id="cards">
+      <header class="sec-header">
+        <div class="sec-eyebrow">11 · Components · Cards</div>
+        <h2>Five card archetypes.</h2>
+        <p><b>Floater</b> for hero examples, <b>Result</b> for single compliance, <b>Med</b> for stacked kits, <b>Source</b> (dark) for citations, <b>Share</b> for social-ready output. Each has a distinct radius and elevation so users orient immediately.</p>
+      </header>
+
+      <div class="card-gallery">
+        <div class="floater">
+          <span class="status-badge sb-rose"><span class="sb-dot"></span> Banned</span>
+          <div class="f-title">Adderall · 20mg</div>
+          <div class="f-meta">Japan · MHLW</div>
+        </div>
+        <div class="floater dark">
+          <div style="font-family:'Montserrat';font-weight:800;font-size:11px;letter-spacing:0.08em;color:var(--gold);text-transform:uppercase">Verified answer</div>
+          <div class="f-route" style="color:#fff">NYC
+            <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M14 6l6 6-6 6"/></svg>
+            DXB</div>
+          <div style="color:#B4A897;font-size:12px">Codeine · 30mg · Restricted</div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid #3A3024;font-size:11px;color:#8A7E6D;font-family:'JetBrains Mono'">MoHAP Federal Decree 14/2020<br/>Verified Apr 11, 2026</div>
+        </div>
+        <div class="floater" style="border-left: 4px solid var(--amber-fg)">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font-family:'Montserrat';font-weight:800;font-size:15px">Codeine 30mg</span><span class="status-badge sb-amber"><span class="sb-dot"></span> Restricted</span></div>
+          <div class="f-meta">Requires Yakkan Shoumei · file by May 06</div>
+          <div style="margin-top:10px;font-family:'Montserrat';font-weight:800;font-size:16px">42 <small style="font-weight:600;font-size:10px;color:var(--ink-3);letter-spacing:0.06em;text-transform:uppercase">Max tablets</small></div>
+        </div>
+        <div class="floater" style="background:var(--ink);color:#EFE6D8;border:0">
+          <div style="font-family:'Montserrat';font-weight:800;font-size:10px;letter-spacing:0.08em;color:#8A7E6D;text-transform:uppercase">Government sources · 3</div>
+          <div style="margin-top:10px">
+            <div style="font-family:'Montserrat';font-weight:800;font-size:14px;color:#fff">MHLW</div>
+            <div style="font-family:'JetBrains Mono';font-size:11px;color:var(--apricot);word-break:break-all">mhlw.go.jp/stf/seisakunitsuite</div>
+            <div style="margin-top:8px;font-size:11px;color:#B4A897;display:flex;gap:8px;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:#6BAE5A;box-shadow:0 0 0 4px rgba(107,174,90,.18)"></span> Verified Apr 11, 2026</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VERDICTS ============ -->
+    <section class="sec" id="verdict">
+      <header class="sec-header">
+        <div class="sec-eyebrow">12 · Components · Verdicts</div>
+        <h2>The headline of every result.</h2>
+        <p>The verdict block is the single most important element on the result page. It lives directly under the route/title pair, uses one of four status-lane backgrounds, leads with a Montserrat 800 label, and ends with one sentence that names the legal basis.</p>
+      </header>
+
+      <div class="demo">
+        <div class="verdict v-rose"><div class="verdict-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg></div><div><div class="v-label">Banned — do not carry.</div><div class="v-sub">Amphetamine-based stimulants are prohibited under Japan's Stimulants Control Act. There is no tourist permit available.</div></div></div>
+      </div>
+      <div class="demo">
+        <div class="verdict v-amber"><div class="verdict-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.01"/></svg></div><div><div class="v-label">Restricted — permit required.</div><div class="v-sub">Codeine supply over 10 days requires a Yakkan Shoumei certificate. Lead time: 14 business days.</div></div></div>
+      </div>
+      <div class="demo">
+        <div class="verdict v-sky"><div class="verdict-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="6" width="16" height="13" rx="2"/><path d="M8 6V3M16 6V3M4 10h16"/></svg></div><div><div class="v-label">Prescription-only.</div><div class="v-sub">Carry sertraline in original pharmacy-labeled bottle. No certificate required.</div></div></div>
+      </div>
+      <div class="demo">
+        <div class="verdict v-sage"><div class="verdict-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div><div><div class="v-label">Legal. Pack as you normally would.</div><div class="v-sub">Ibuprofen is OTC in Germany. Personal supply up to 2 months permitted without declaration.</div></div></div>
+      </div>
+    </section>
+
+    <!-- ============ PATTERNS ============ -->
+    <section class="sec" id="patterns">
+      <header class="sec-header">
+        <div class="sec-eyebrow">13 · Patterns · Layouts</div>
+        <h2>Three page archetypes.</h2>
+        <p><b>Hero-centric</b> for home & search (centered, floating demo cards), <b>Two-column with dark sidebar</b> for results (main content + sources on dark ink), and <b>Vertical timeline</b> for trips with connecting rails.</p>
+      </header>
+
+      <div class="demo" style="padding: 30px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <div style="background:var(--cream);border:1px solid var(--rule);border-radius:14px;padding:16px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+            <div style="width:70%;height:20px;background:var(--ink);border-radius:4px"></div>
+            <div style="width:90%;height:28px;background:var(--paper);border:1px solid var(--rule);border-radius:10px"></div>
+            <div style="display:flex;gap:6px;width:90%"><div style="flex:1;height:24px;background:var(--apricot-soft);border-radius:6px;transform:rotate(-4deg)"></div><div style="flex:1;height:24px;background:var(--ice-soft);border-radius:6px;transform:rotate(3deg)"></div></div>
+            <div style="font-family:'Montserrat';font-size:10px;color:var(--ink-3);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-top:auto">Hero-centric</div>
+          </div>
+          <div style="background:var(--cream);border:1px solid var(--rule);border-radius:14px;padding:16px;aspect-ratio:3/4;display:flex;flex-direction:column;gap:10px">
+            <div style="height:18px;background:var(--paper);border:1px solid var(--rule);border-radius:4px"></div>
+            <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:10px;flex:1">
+              <div style="background:var(--paper);border:1px solid var(--rule);border-radius:8px"></div>
+              <div style="background:var(--ink);border-radius:8px"></div>
+            </div>
+            <div style="font-family:'Montserrat';font-size:10px;color:var(--ink-3);font-weight:700;letter-spacing:0.08em;text-transform:uppercase">Two-col dark sidebar</div>
+          </div>
+          <div style="background:var(--cream);border:1px solid var(--rule);border-radius:14px;padding:16px;aspect-ratio:3/4;display:flex;flex-direction:column;gap:10px">
+            <div style="height:18px;background:var(--ice-soft);border:1px solid var(--ice);border-radius:4px"></div>
+            <div style="position:relative;flex:1;padding-left:14px;display:flex;flex-direction:column;gap:8px">
+              <div style="position:absolute;left:4px;top:8px;bottom:8px;width:2px;background:var(--rule)"></div>
+              <div style="height:26px;background:var(--paper);border:1px solid var(--rule);border-radius:6px"></div>
+              <div style="height:38px;background:var(--amber-bg);border-radius:6px"></div>
+              <div style="height:26px;background:var(--paper);border:1px solid var(--rule);border-radius:6px"></div>
+            </div>
+            <div style="font-family:'Montserrat';font-size:10px;color:var(--ink-3);font-weight:700;letter-spacing:0.08em;text-transform:uppercase">Vertical timeline</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MOTION ============ -->
+    <section class="sec" id="motion">
+      <header class="sec-header">
+        <div class="sec-eyebrow">14 · Motion & loading</div>
+        <h2>Fast confidence, narrated.</h2>
+        <p>CheckOrbit's loading states are <b>not</b> generic spinners. They narrate the verification in mono, reinforcing "we are checking real sources right now". Target time-to-result: under 2 seconds on the search path.</p>
+      </header>
+
+      <div class="loader-demo">
+        <div class="loader-spin"></div>
+        <div>
+          <div class="loader-t">Checking against 3 government sources…</div>
+          <div class="loader-sub" id="loaderSub">MHLW 1951.14 · cross-ref compound tree · verifying</div>
+        </div>
+      </div>
+
+      <h4 class="sub-2">Motion rules</h4>
+      <div class="a11y-grid">
+        <div class="a11y-card"><div class="ico">∿</div><div><h4>Ease-out everywhere</h4><p>Transitions 150–200ms, cubic-bezier(0.2, 0.9, 0.3, 1). Never ease-in.</p></div></div>
+        <div class="a11y-card"><div class="ico">↓</div><div><h4>Press depth only</h4><p>Buttons translateY(1px) on :active. No scale, no glow.</p></div></div>
+        <div class="a11y-card"><div class="ico">✦</div><div><h4>Narrated loaders</h4><p>Any wait over 600ms gets a verification-step sub-caption cycling through source IDs.</p></div></div>
+        <div class="a11y-card"><div class="ico">◐</div><div><h4>Respect reduced-motion</h4><p>prefers-reduced-motion kills spin, fade, translate. Loader becomes static with ticking text only.</p></div></div>
+      </div>
+    </section>
+
+    <!-- ============ A11Y ============ -->
+    <section class="sec" id="a11y">
+      <header class="sec-header">
+        <div class="sec-eyebrow">15 · Accessibility</div>
+        <h2>WCAG 2.1 AA, with one extra rule.</h2>
+        <p>Because CheckOrbit answers medical questions to anxious travelers at 2 AM, we add a rule above AA: <b>every status must survive monochrome</b>. Color alone is never the carrier of a verdict — there is always an icon and a text label.</p>
+      </header>
+
+      <div class="a11y-grid">
+        <div class="a11y-card"><div class="ico">3×</div><div><h4>Triple encoding</h4><p>Status = color + icon + text label. A rose-blind user reading in grayscale still sees "✗ Banned".</p></div></div>
+        <div class="a11y-card"><div class="ico">44</div><div><h4>Touch targets ≥ 44px</h4><p>Every tappable control, including nav buttons and medication cards, hits the 44×44 minimum.</p></div></div>
+        <div class="a11y-card"><div class="ico">AA</div><div><h4>Contrast</h4><p>Body text meets 4.5:1 on cream. Badges meet 4.5:1 between label and status background. Source mono on dark meets 7:1.</p></div></div>
+        <div class="a11y-card"><div class="ico">⌨</div><div><h4>Keyboard-first</h4><p>Search flow is fully keyboardable: Tab through fields, arrows in typeahead, Enter to submit.</p></div></div>
+        <div class="a11y-card"><div class="ico">⌘</div><div><h4>Focus rings kept</h4><p>Never `outline: 0` without replacement. Focus uses a 2px orange ring offset 2px.</p></div></div>
+        <div class="a11y-card"><div class="ico">◑</div><div><h4>Reduced motion</h4><p>prefers-reduced-motion disables all animation and transitions immediately.</p></div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // === Logo gradient is wired via SVG defs ===
+
+  // === Icon grid ===
+  const icons = [
+    ['search','<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>'],
+    ['pill','<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/>'],
+    ['pin','<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>'],
+    ['check','<path d="M20 6L9 17l-5-5"/>'],
+    ['x-circle','<circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/>'],
+    ['triangle','<path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.01"/>'],
+    ['rx','<rect x="4" y="6" width="16" height="13" rx="2"/><path d="M8 6V3M16 6V3M4 10h16"/>'],
+    ['clock','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],
+    ['shield','<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/>'],
+    ['plane','<path d="M3 12h18M14 6l6 6-6 6"/>'],
+    ['share','<path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/>'],
+    ['doc','<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>'],
+    ['info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16v.01"/>'],
+    ['arrow-right','<path d="M5 12h14M13 5l7 7-7 7"/>'],
+    ['globe','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'],
+    ['bell','<path d="M6 9a6 6 0 1112 0c0 4 2 6 2 6H4s2-2 2-6z"/><path d="M10 19a2 2 0 004 0"/>']
+  ];
+  const ig = document.getElementById('iconGrid');
+  ig.innerHTML = icons.map(([n,p]) => `
+    <button class="icon-tile" title="${n}" data-copy="${n}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>
+    </button>
+  `).join('');
+
+  // === copy to clipboard ===
+  document.querySelectorAll('.copy,[data-copy]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const v = el.dataset.copy || el.textContent.trim();
+      try { navigator.clipboard.writeText(v); } catch(e) {}
+      const old = el.style.outline;
+      el.style.outline = '2px solid var(--orange)';
+      el.style.outlineOffset = '2px';
+      setTimeout(() => { el.style.outline = old; el.style.outlineOffset = ''; }, 400);
+    });
+  });
+
+  // === Tweaks ===
+  function seg(id, key, applyFn) {
+    document.getElementById(id).addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      document.querySelectorAll(`#${id} button`).forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      applyFn(b.dataset[key]);
+    });
+  }
+  seg('tkTheme','theme', v => { document.documentElement.dataset.theme = v; });
+  seg('tkScale','scale', v => { document.documentElement.style.setProperty('--scale', v); });
+  seg('tkDensity','density', v => { document.documentElement.style.setProperty('--density', v); });
+
+  // === Active nav highlight on scroll ===
+  const navLinks = document.querySelectorAll('aside.ds-nav a');
+  const sections = [...document.querySelectorAll('section.sec')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const id = en.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => io.observe(s));
+
+  // === Loader narrator ===
+  (function loop() {
+    const steps = ['MHLW 1951.14 · cross-ref compound tree · verifying', 'elaws.e-gov.go.jp · 2024 revision · checking', 'Narcotics Control Dept · traveler guidance · verifying', 'Assembling answer · 3 sources'];
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % steps.length;
+      const el = document.getElementById('loaderSub');
+      if (el) el.textContent = steps[i];
+    }, 1600);
+  })();
+</script>
+</body>
+</html>
