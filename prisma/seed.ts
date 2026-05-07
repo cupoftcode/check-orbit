@@ -189,7 +189,7 @@ async function main() {
   });
 
   // Supplement with undisclosed blend
-  const energyBlend = await prisma.medication.upsert({
+  await prisma.medication.upsert({
     where: { slug: "energy-max-blend" },
     update: {},
     create: {

@@ -25,7 +25,6 @@ export const dispatchRegulationChange = task({
   run: async (payload: RegulationChangePayload) => {
     const {
       compoundId,
-      compoundName,
       countryCode,
       countryName,
       previousStatus,

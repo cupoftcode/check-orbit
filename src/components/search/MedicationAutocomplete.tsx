@@ -108,11 +108,7 @@ export function MedicationAutocomplete({
   }, []);
 
   useEffect(() => {
-    if (query.length === 0) {
-      setFetchState({ status: "idle" });
-      setIsOpen(false);
-      return;
-    }
+    if (query.length === 0) return;
 
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -199,7 +195,13 @@ export function MedicationAutocomplete({
           ref={inputRef}
           value={isLocked ? selectedMedication.brandName : query}
           onChange={(e) => {
-            if (!isLocked) setQuery(e.target.value);
+            if (isLocked) return;
+            const value = e.target.value;
+            setQuery(value);
+            if (value.length === 0) {
+              setFetchState({ status: "idle" });
+              setIsOpen(false);
+            }
           }}
           onFocus={() => {
             if (suggestions.length > 0 && !isLocked) setIsOpen(true);

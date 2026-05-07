@@ -2,7 +2,6 @@ import Link from "next/link";
 import { V2Search } from "./check/V2Search";
 import { Clock, Shield, Check } from "lucide-react";
 import StatusBadge from "@/components/v2/ds/StatusBadge";
-import type { Status } from "@/components/v2/ds/StatusBadge";
 import Button from "@/components/v2/ds/Button";
 
 const SOURCES = [

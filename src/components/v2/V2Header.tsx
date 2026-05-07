@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth, UserButton, SignInButton } from "@clerk/nextjs";
 import { Menu, X } from "lucide-react";
-import Logo, { WordMark } from "@/components/v2/ds/Logo";
+import { WordMark } from "@/components/v2/ds/Logo";
 import Button from "@/components/v2/ds/Button";
 
 const NAV_LINKS = [

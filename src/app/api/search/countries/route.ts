@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
-import { countrySearchSchema } from "@/lib/validation/search-params";
 import { success, error } from "@/lib/utils/response";
 import { checkRateLimit } from "@/lib/rate-limit/rate-limit";
 import * as Sentry from "@sentry/nextjs";

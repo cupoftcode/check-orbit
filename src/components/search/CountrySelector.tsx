@@ -31,7 +31,6 @@ type FetchState =
   | { status: "error"; message: string };
 
 export function CountrySelector({
-  variant = "single",
   onSelect,
   selectedCountry,
   onClear,
